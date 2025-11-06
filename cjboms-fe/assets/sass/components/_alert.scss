@@ -1,0 +1,29 @@
+@use "../abstracts" as *;
+
+@each $color, $shade in $theme-colors {
+  @each $prop, $value in $shade {
+    .alert-#{$color} {
+      --tblr-alert-bg: rgba(var(--tblr-#{$color}-100), 0.1);
+      --tblr-alert-padding-x: 1rem;
+      --tblr-alert-padding-y: 1.5rem;
+      --tblr-alert-margin-bottom: 1.5rem;
+      --tblr-alert-color: rgba(var(--tblr-#{$color}-100), 1);
+      --tblr-alert-border-color: rgba(var(--tblr-#{$color}-100), 1);
+      --tblr-alert-shadow: 0 4px 4px 0 rgba(var(--tblr-#{$color}-100), 0.12);
+      --tblr-alert-border: 1px solid transparent;
+      --tblr-alert-border-radius: #{$border-radius};
+
+      border: var(--tblr-alert-border);
+      border-left: 2px solid var(--tblr-alert-border-color);
+      background: var(--tblr-alert-bg);
+      box-shadow: var(--tblr-alert-shadow);
+      color: var(--tblr-alert-color);
+      font-size: var(--tblr-small-font-size);
+      line-height: 1;
+
+      .btn-close {
+        color: var(--tblr-alert-color);
+      }
+    }
+  }
+}

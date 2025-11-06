@@ -1,0 +1,41 @@
+@use "../abstracts" as *;
+
+.table {
+  --tblr-table-bg: transparent;
+  --tblr-table-accent-bg: transparent;
+  --tblr-table-striped-color: inherit;
+  --tblr-table-striped-bg: rgba(244, 247, 248, 1);
+  --tblr-table-active-color: inherit;
+  --tblr-table-active-bg: rgba(0, 0, 0, 0.1);
+  --tblr-table-hover-color: inherit;
+  --tblr-table-hover-bg: rgba(249, 252, 253, 1);
+  --tblr-table-heading-color: var(--tblr-dark);
+  a {
+    --tblr-link-color: var(--tblr-table-color);
+  }
+}
+
+.table {
+  thead {
+    th {
+      text-transform: none;
+      letter-spacing: normal;
+      padding: 0.8rem 0.5rem;
+      font-size: var(--tblr-small-font-size);
+      &:last-child {
+        width: 8%;
+        text-align: center;
+      }
+    }
+  }
+  tbody {
+    td {
+      font-size: var(--tblr-small-font-size);
+      padding: 0.5rem;
+      color: var(--tblr-body);
+    }
+  }
+  .btn {
+    font-size: var(--tblr-small-font-size);
+  }
+}

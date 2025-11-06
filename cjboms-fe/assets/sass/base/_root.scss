@@ -1,0 +1,49 @@
+@use "../abstracts" as *;
+
+:root {
+  @each $color, $shade in $theme-colors {
+    @each $prop, $value in $shade {
+      --tblr-#{$color}-#{$prop}: #{$value};
+      @if nth($prop, 1) == 100 {
+        --tblr-#{$color}-rgb: #{$value};
+      }
+    }
+    --tblr-#{$color}: rgba(var(--tblr-#{$color}-100), 1);
+  }
+  // font family
+  --tblr-heading-font-family: "Merriweather", serif;
+  --tblr-body-font-family: "Metropolis", serif;
+  --tblr-font-sans-serif: var(--tblr-body-font-family);
+  // font family
+  // font sizes
+  --tblr-font-size-h1: 2.5rem; /*40px*/
+  --tblr-font-size-h2: 2rem; /*32px*/
+  --tblr-font-size-h3: 1.75rem; /*28px*/
+  --tblr-font-size-h4: 1.5rem; /*24px*/
+  --tblr-font-size-h5: 1.25rem; /*20px*/
+  --tblr-font-size-h6: 1rem; /*16px*/
+  --tblr-line-height-h1: 3rem;
+  --tblr-line-height-h2: 2.4rem;
+  --tblr-line-height-h3: 2.1rem;
+  --tblr-line-height-h4: 1.8rem;
+  --tblr-line-height-h5: 1.5rem;
+  --tblr-line-height-h6: 1.4rem;
+  --tblr-body-font-size: 1rem;
+  --tblr-medium-font-size: 1.125rem; /*18px*/
+  --tblr-small-font-size: 0.875rem; /*14px*/
+  --tblr-xtra-small-font-size: 0.75rem; /*12px*/
+  // font sizes
+  // colors
+  --tblr-body-bg: var(--tblr-green);
+  --tblr-card-bg: var(--tblr-white);
+  --tblr-card-bg-rgb: 255, 255, 255;
+  --tblr-border-color: #e6e7e9;
+  --tblr-border-color-rgb: 230, 231, 233;
+  --tblr-border-color-light: #f2f3f4;
+  --tblr-border-color-light-rgb: 242, 243, 244;
+  --tblr-link-hover-color: var(--tblr-primary);
+  --tblr-heading-color: rgba(var(--tblr-green-700), 1);
+  --tblr-link-color-rgb: var(--tblr-primary);
+  // colors
+  // spacing
+}

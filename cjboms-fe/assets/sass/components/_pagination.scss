@@ -1,0 +1,30 @@
+@use "../abstracts" as *;
+
+.pagination {
+  --tblr-pagination-border-radius: 0;
+  --tblr-pagination-bg: transparent;
+  --tblr-pagination-active-bg: var(--tblr-primary);
+  --tblr-pagination-hover-bg: rgba(var(--tblr-primary-100), 0.6);
+  --tblr-pagination-active-border-color: var(--tblr-primary);
+
+  .page-item {
+    .page-link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--tblr-pagination-border-radius);
+      &:hover {
+        background: var(--tblr-pagination-active-bg);
+        color: var(--tblr-white);
+      }
+    }
+    &:not(.active) {
+      .page-link {
+        background: var(--tblr-pagination-bg);
+        &:hover {
+          background: var(--tblr-pagination-hover-bg);
+        }
+      }
+    }
+  }
+}

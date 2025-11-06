@@ -1,0 +1,85 @@
+@use "sass:meta";
+@use "sass:math";
+@use "sass:map";
+@use "breakpoints" as *;
+
+/*-------------breakpoints start----------------*/
+@mixin mq($key) {
+  $grid: map-get($breakpoints, $key);
+  @media only screen and (max-width: $grid) {
+    @content;
+  }
+}
+
+@mixin minq($key) {
+  $grid: map-get($breakpoints, $key);
+  @media only screen and (min-width: $grid + 1px) {
+    @content;
+  }
+}
+
+/* 
+@include mq(desktop) {
+}
+
+@include minq(desktop) {
+}
+
+*/
+
+/*-------------breakpoints end----------------*/
+
+/*-------------custom mixins----------------*/
+
+/* font awesome */
+@mixin fa {
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  // content: "\f0d8";
+}
+
+@mixin tbi {
+  font-family: "tabler-icons";
+  // content: '\f640';
+}
+
+@mixin curve-first {
+  border-top-left-radius: $form-border-radius !important;
+  border-bottom-left-radius: $form-border-radius !important;
+}
+@mixin curve-last {
+  border-top-right-radius: $form-border-radius !important;
+  border-bottom-right-radius: $form-border-radius !important;
+}
+
+@mixin bodyScroll {
+  scrollbar-color: #a3afbc transparent;
+
+  &::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+
+  &::-webkit-scrollbar {
+    width: 6px;
+    background-color: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #6c6c6c;
+    border-radius: 8px;
+    background-clip: padding-box;
+    border: none;
+  }
+}
+
+// @each $tagprop, $tagvalue in $tagColors {
+//   .#{$tagprop}-tag {
+//     border-color: $tagvalue !important;
+//     color: $tagvalue !important;
+
+//     span,
+//     i {
+//       color: $tagvalue !important;
+//     }
+//   }
+// }

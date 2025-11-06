@@ -1,0 +1,143 @@
+// custom theme colors start (rgb values)
+
+/*--------example-----------
+flat(100): var(--tblr-primary)
+flat(>100): rgba(var(--tblr-primary-200), 1)
+
+transparent: rgba(var(--tblr-primary-100), .5)
+transparent: rgb(var(--tblr-primary-20))
+
+
+100: solid color
+>100 : variant color (hover, focus, active)
+<100 : transparent color
+
+Used Colors: Primary/Secondary/Success/Green/Body
+------example-----------*/
+$theme-colors: (
+  primary: (
+    20: "53, 79, 82, 0.2",
+    50: "53, 79, 82, 0.5",
+    100: "53, 79, 82",
+    200: "40, 59, 61",
+    300: "32, 47, 49",
+  ),
+  secondary: (
+    20: "38, 51, 64, 0.2",
+    50: "38, 51, 64, 0.5",
+    100: "38, 51, 64",
+    200: "61, 72, 87",
+  ),
+  success: (
+    50: "25, 135, 84, 0.5",
+    100: "25, 135, 84",
+    200: "72, 163, 64",
+  ),
+  green: (
+    5: "33, 150, 83, 0.5",
+    50: "230, 235, 235",
+    100: "234, 237, 237",
+    200: "174, 185, 186",
+    300: "93, 114, 117",
+    600: "42, 63, 66",
+    700: "27, 40, 41",
+    800: "21, 32, 33",
+  ),
+  body: (
+    100: "12, 16, 21",
+    200: "233, 234, 236",
+  ),
+
+  info: (
+    50: "13, 202, 240, 0.5",
+    100: "13, 202, 240",
+    200: "45, 120, 182",
+  ),
+  warning: (
+    50: "255, 193, 7, 0.5",
+    100: "255, 193, 7",
+    200: "209, 154, 3",
+  ),
+  danger: (
+    50: "220, 53, 69, 0.5",
+    100: "220, 53, 69",
+    200: "216, 27, 43",
+  ),
+  light: (
+    50: "248, 249, 250, 0.5",
+    100: "248, 249, 250",
+    200: "208, 210, 211",
+  ),
+  dark: (
+    50: "37, 37, 41, 0.5",
+    100: "37, 37, 41",
+    200: "59, 52, 52",
+  ),
+  grey: (
+    5: "125, 133, 140, 0.05",
+    100: "125, 133, 140",
+  ),
+  // status colors
+  status-pending:
+    (
+      5: "155, 81, 224, 0.05",
+      100: "155, 81, 224",
+    ),
+  status-clinicalcheck: (
+    5: "155, 81, 224, 0.05",
+    100: "155, 81, 224",
+  ),
+  status-approved: (
+    5: "33, 150, 83, 0.05",
+    100: "33, 150, 83",
+  ),
+  status-fulfilled: (
+    5: "20, 108, 67, 0.05",
+    100: "20, 108, 67",
+  ),
+  status-dispatched: (
+    5: "33, 150, 83, 0.05",
+    100: "33, 150, 83",
+  ),
+  status-held: (
+    5: "242, 153, 74, 0.05",
+    100: "242, 153, 74",
+  ),
+  status-intervention: (
+    5: "242, 153, 74, 0.05",
+    100: "242, 153, 74",
+  ),
+  status-rejected: (
+    5: "235, 87, 87, 0.05",
+    100: "235, 87, 87",
+  ),
+  status-cancelled: (
+    5: "125, 133, 140, 0.05",
+    100: "125, 133, 140",
+  ),
+  status-payment-pending : (
+    5: "255, 102, 0, 0.05",
+    100: "255, 102, 0",
+  ),
+  status-shipped : (
+    5: "140, 255, 182, 0.05",
+    100: "140, 255, 182",
+  ),
+);
+// custom theme colors end
+
+/*-------custom status colors-----------------*/
+$statusColors: (
+  "pending": var(--tblr-status-pending),
+  "clinicalcheck": var(--tblr-status-clinicalcheck),
+  "approved": var(--tblr-status-approved),
+  "fulfilled": var(--tblr-status-fulfilled),
+  "dispatched": var(--tblr-status-dispatched),
+  "held": var(--tblr-status-held),
+  "intervention": var(--tblr-status-intervention),
+  "rejected": var(--tblr-status-rejected),
+  "cancelled": var(--tblr-status-cancelled),
+  "payment-pending": var(--tblr-status-payment-pending),
+  "status-shipped": var(--tblr-status-shipped),
+);
+/*-------custom status colors-----------------*/

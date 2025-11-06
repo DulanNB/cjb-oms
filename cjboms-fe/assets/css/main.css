@@ -1,0 +1,292 @@
+:root {
+  --tblr-primary: #0b0229 !important;
+  --tblr-border-radius: 2rem !important;
+  --tblr-base: #fe0a0a !important;
+  --tblr-status-shipped-5: 140, 255, 182, 0.05;
+  --tblr-status-shipped-100: 140, 255, 182;
+  --tblr-status-shipped-rgb: 140, 255, 182;
+  --tblr-status-shipped: rgba(var(--tblr-status-shipped-100), 1);
+  --tblr-status-pending-5: 209, 155, 56, 0.05;
+  --tblr-status-pending-100: 209, 155, 56;
+  --tblr-status-pending-rgb: 209, 155, 56;
+  --tblr-status-pending: rgba(var(--tblr-status-pending-100), 1);
+  --tblr-status-clinicalcheck-5: 155, 81, 224, 0.05;
+  --tblr-status-clinicalcheck-100: 155, 81, 224;
+  --tblr-status-clinicalcheck-rgb: 155, 81, 224;
+  --tblr-status-clinicalcheck: rgba(var(--tblr-status-clinicalcheck-100), 1);
+  --tblr-status-approved-5: 33, 150, 83, 0.05;
+  --tblr-status-approved-100: 33, 150, 83;
+  --tblr-status-approved-rgb: 33, 150, 83;
+  --tblr-status-approved: rgba(var(--tblr-status-approved-100), 1);
+  --tblr-status-dispatched-5: 33, 150, 83, 0.05;
+  --tblr-status-dispatched-100: 33, 150, 83;
+  --tblr-status-dispatched-rgb: 33, 150, 83;
+  --tblr-status-dispatched: rgba(var(--tblr-status-dispatched-100), 1);
+  --tblr-status-held-5: 242, 153, 74, 0.05;
+  --tblr-status-held-100: 242, 153, 74;
+  --tblr-status-held-rgb: 242, 153, 74;
+  --tblr-status-held: rgba(var(--tblr-status-held-100), 1);
+  --tblr-status-intervention-5: 212, 127, 42, 0.05;
+  --tblr-status-intervention-100: 212, 127, 42;
+  --tblr-status-intervention-rgb: 212, 127, 42;
+  --tblr-status-intervention: rgba(var(--tblr-status-intervention-100), 1);
+  --tblr-status-rejected-5: 235, 87, 87, 0.05;
+  --tblr-status-rejected-100: 235, 87, 87;
+  --tblr-status-rejected-rgb: 235, 87, 87;
+  --tblr-status-rejected: rgba(var(--tblr-status-rejected-100), 1);
+  --tblr-status-cancelled-5: 125, 133, 140, 0.05;
+  --tblr-status-cancelled-100: 125, 133, 140;
+  --tblr-status-cancelled-rgb: 125, 133, 140;
+  --tblr-status-cancelled: rgba(var(--tblr-status-cancelled-100), 1);
+  margin-left: 0 !important;
+}
+
+/* Base nav-link styling - lighter font weight for default state */
+.sidenav-wrapper.navbar-vertical.navbar-expand-lg .navbar-collapse .navbar-nav .nav-link {
+  font-weight: 400 !important;
+  color: #ffffff !important;
+  padding: 12px 16px !important;
+  border-radius: 8px !important;
+  margin: 4px 8px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.sidenav-wrapper.navbar-vertical.navbar-expand-lg .navbar-collapse .navbar-nav .nav-link .nav-link-title {
+  margin-left: 8px;
+  font-weight: 400 !important;
+  font-size: 16px !important;
+  color: #FFFFFFB2 !important;
+}
+
+.sidenav-wrapper.navbar-vertical.navbar-expand-lg .navbar-collapse .navbar-nav .nav-link svg {
+  color: #ffffff !important;
+  flex-shrink: 0;
+}
+
+/* Hover state */
+.sidenav-wrapper.navbar-vertical.navbar-expand-lg .navbar-collapse .navbar-nav .nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.sidenav-wrapper.navbar-vertical.navbar-expand-lg .navbar-collapse .navbar-nav .nav-link:hover .nav-link-title {
+  color: #ffffff !important;
+}
+
+.sidenav-wrapper.navbar-vertical.navbar-expand-lg .navbar-collapse .navbar-nav .nav-link:hover svg {
+  color: #ffffff !important;
+}
+
+/* Active state - multiple selectors to catch all possible active classes */
+.sidenav-wrapper.navbar-vertical.navbar-expand-lg .navbar-collapse .navbar-nav .nav-link.active-link,
+.sidenav-wrapper.navbar-vertical.navbar-expand-lg .navbar-collapse .navbar-nav .nav-link.router-link-active,
+.sidenav-wrapper.navbar-vertical.navbar-expand-lg .navbar-collapse .navbar-nav .nav-link.router-link-exact-active,
+.sidenav-wrapper.navbar-vertical.navbar-expand-lg .navbar-collapse .navbar-nav .nav-link.nuxt-link-active,
+.sidenav-wrapper.navbar-vertical.navbar-expand-lg .navbar-collapse .navbar-nav .nav-link.nuxt-link-exact-active,
+.sidenav-wrapper.navbar-vertical.navbar-expand-lg .navbar-collapse .navbar-nav .active-link,
+.sidenav-wrapper.navbar-vertical.navbar-expand-lg .navbar-collapse .navbar-nav .router-link-active,
+.sidenav-wrapper.navbar-vertical.navbar-expand-lg .navbar-collapse .navbar-nav .router-link-exact-active,
+.sidenav-wrapper.navbar-vertical.navbar-expand-lg .navbar-collapse .navbar-nav .nuxt-link-active,
+.sidenav-wrapper.navbar-vertical.navbar-expand-lg .navbar-collapse .navbar-nav .nuxt-link-exact-active {
+  font-weight: 600 !important;
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  border-left: none !important;
+  border-radius: 8px !important;
+}
+
+.sidenav-wrapper.navbar-vertical.navbar-expand-lg .navbar-collapse .navbar-nav .nav-link.active-link .nav-link-title,
+.sidenav-wrapper.navbar-vertical.navbar-expand-lg .navbar-collapse .navbar-nav .nav-link.router-link-active .nav-link-title,
+.sidenav-wrapper.navbar-vertical.navbar-expand-lg .navbar-collapse .navbar-nav .nav-link.router-link-exact-active .nav-link-title,
+.sidenav-wrapper.navbar-vertical.navbar-expand-lg .navbar-collapse .navbar-nav .nav-link.nuxt-link-active .nav-link-title,
+.sidenav-wrapper.navbar-vertical.navbar-expand-lg .navbar-collapse .navbar-nav .nav-link.nuxt-link-exact-active .nav-link-title,
+.sidenav-wrapper.navbar-vertical.navbar-expand-lg .navbar-collapse .navbar-nav .active-link .nav-link-title,
+.sidenav-wrapper.navbar-vertical.navbar-expand-lg .navbar-collapse .navbar-nav .router-link-active .nav-link-title,
+.sidenav-wrapper.navbar-vertical.navbar-expand-lg .navbar-collapse .navbar-nav .router-link-exact-active .nav-link-title,
+.sidenav-wrapper.navbar-vertical.navbar-expand-lg .navbar-collapse .navbar-nav .nuxt-link-active .nav-link-title,
+.sidenav-wrapper.navbar-vertical.navbar-expand-lg .navbar-collapse .navbar-nav .nuxt-link-exact-active .nav-link-title {
+  font-weight: 600 !important;
+  color: #ffffff !important;
+}
+
+.cs-sidebar {
+  height: auto;
+}
+
+.bg-sidebar{
+  background-color: #550bc8 !important;
+}
+
+@media only screen and (max-width: 991px) {
+  .cs-sidebar {
+    height: 95vh;
+  }
+}
+
+#header {
+  color: white !important;
+  font-weight: 700 !important;
+  font-size: 24px !important;
+}
+
+/* For status colors */
+.bg-status-pending-5 {
+  background-color: rgba(var(--tblr-status-pending-5));
+}
+
+.bg-status-pending-100 {
+  background-color: rgba(var(--tblr-status-pending-100));
+}
+
+.text-status-pending {
+  color: rgba(var(--tblr-status-pending-100), 1);
+}
+
+.bg-status-clinicalcheck-5 {
+  background-color: rgba(var(--tblr-status-clinicalcheck-5));
+}
+
+.bg-status-clinicalcheck-100 {
+  background-color: rgba(var(--tblr-status-clinicalcheck-100));
+}
+
+.text-status-clinicalcheck {
+  color: rgba(var(--tblr-status-clinicalcheck-100), 1);
+}
+
+.bg-status-approved-5 {
+  background-color: rgba(var(--tblr-status-approved-5));
+}
+
+.bg-status-approved-100 {
+  background-color: rgba(var(--tblr-status-approved-100));
+}
+
+.text-status-approved {
+  color: rgba(var(--tblr-status-approved-100), 1);
+}
+
+.bg-status-dispatched-5 {
+  background-color: rgba(var(--tblr-status-dispatched-5));
+}
+
+.bg-status-dispatched-100 {
+  background-color: rgba(var(--tblr-status-dispatched-100));
+}
+
+.text-status-dispatched {
+  color: rgba(var(--tblr-status-dispatched-100), 1);
+}
+
+.bg-status-held-5 {
+  background-color: rgba(var(--tblr-status-held-5));
+}
+
+.bg-status-held-100 {
+  background-color: rgba(var(--tblr-status-held-100));
+}
+
+.text-status-held {
+  color: rgba(var(--tblr-status-held-100), 1);
+}
+
+.bg-status-intervention-5 {
+  background-color: rgba(var(--tblr-status-intervention-5));
+}
+
+.bg-status-intervention-100 {
+  background-color: rgba(var(--tblr-status-intervention-100));
+}
+
+.text-status-intervention {
+  color: rgba(var(--tblr-status-intervention-100), 1);
+}
+
+.bg-status-rejected-5 {
+  background-color: rgba(var(--tblr-status-rejected-5));
+}
+
+.bg-status-rejected-100 {
+  background-color: rgba(var(--tblr-status-rejected-100));
+}
+
+.text-status-rejected {
+  color: rgba(var(--tblr-status-rejected-100), 1);
+}
+
+.bg-status-cancelled-5 {
+  background-color: rgba(var(--tblr-status-cancelled-5));
+}
+
+.bg-status-cancelled-100 {
+  background-color: rgba(var(--tblr-status-cancelled-100));
+}
+
+.text-status-cancelled {
+  color: rgba(var(--tblr-status-cancelled-100), 1);
+}
+
+.bg-status-shipped-5 {
+  background-color: rgba(var(--tblr-status-shipped-5));
+}
+
+.bg-status-shipped-100 {
+  background-color: rgba(var(--tblr-status-shipped-100));
+}
+
+.text-status-shipped {
+  color: rgba(var(--tblr-status-shipped-100), 1);
+}
+
+.validation-error-message
+{
+  color: red !important;
+  font-size: 11px !important;
+  display: block;
+  margin-top: 0.6rem;
+  line-height: 1;
+}
+
+.default-btn {
+  color: white;
+  background-color: rgba(57, 29, 24, 0.9);
+  padding-block: 6px;
+  padding-inline: 15px;
+  border-radius: 5px;
+}
+
+.default-btn-with-only-border {
+  color: rgba(57, 29, 24, 0.9);
+  border: 1px solid rgba(57, 29, 24, 0.9);
+  padding-block: 6px;
+  padding-inline: 10px;
+  border-radius: 5px;
+}
+
+.clear-filter-btn {
+  background-color: #f0f0f0;
+  border-radius: 4px;
+  font-size: 12px !important;
+  padding: 6px 8px !important;
+}
+
+ /* rounded border left and right */
+.rounded-left-custom {
+  border-top-left-radius: 5px !important;
+  border-bottom-left-radius: 5px !important;
+}
+
+.rounded-right-custom {
+  border-top-right-radius: 5px !important;
+  border-bottom-right-radius: 5px !important;
+}
+
+/* override the product unit field select component styles  */
+.unit-field-width .select-input-field {
+  margin-top: 0px !important;
+  padding: 8px 8px !important;
+}
+
+.unit-field-width .rounded-left-custom {
+  border-top-left-radius: 0px !important;
+  border-bottom-left-radius: 0px !important;
+}

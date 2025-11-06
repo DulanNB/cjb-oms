@@ -1,0 +1,9 @@
+@use "../abstracts" as *;
+
+.tabs {
+  &__tabs-vertical {
+    .nav-link {
+      padding: 1rem 1.25rem;
+    }
+  }
+}

@@ -1,0 +1,106 @@
+@use "../abstracts" as *;
+
+@each $color, $shade in $theme-colors {
+  @each $prop, $value in $shade {
+    .btn-#{$color} {
+      --tblr-btn-color: rgba(var(--tblr-#{$color}-100, 0.25));
+      --tblr-btn-color-bg: rgba(var(--tblr-#{$color}-100), 1);
+      --tblr-btn-color-interactive: rgba(var(--tblr-#{$color}-200), 1);
+      --tblr-btn-shadow: 0 10px 20px -10px var(--tblr-btn-color-interactive);
+      --tblr-btn-color-text: #fafbfc;
+      color: var(--tblr-btn-color-text);
+      background: var(--tblr-btn-color-bg);
+      border-color: var(--tblr-btn-color);
+
+      &:hover {
+        color: var(--tblr-btn-color-text);
+        background: var(--tblr-btn-color-interactive);
+        border-color: var(--tblr-btn-color);
+        box-shadow: var(--tblr-btn-shadow);
+      }
+    }
+
+    .btn-light {
+      color: var(--tblr-dark);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      padding: 0;
+    }
+
+    .btn-ghost-#{$color} {
+      --tblr-btn-color-bg: rgba(var(--tblr-#{$color}-100), 0.15);
+      --tblr-btn-color-interactive: rgba(var(--tblr-#{$color}-100), 0.25);
+      --tblr-btn-color-text: rgba(var(--tblr-#{$color}-100));
+      --tblr-btn-shadow: 0 10px 20px -10px var(--tblr-btn-color-interactive);
+      color: var(--tblr-btn-color-text);
+      background: var(--tblr-btn-color-bg);
+      &:hover {
+        color: var(--tblr-btn-color-text);
+        background: var(--tblr-btn-color-interactive);
+        box-shadow: var(--tblr-btn-shadow);
+      }
+    }
+
+    .btn-ghost-light {
+      color: var(--tblr-dark);
+      background: var(--tblr-light);
+      &:hover {
+        color: var(--tblr-dark);
+        background: var(--tblr-light);
+      }
+    }
+
+    .btn-outline-#{$color} {
+      --tblr-btn-color: rgba(var(--tblr-#{$color}-100), 1);
+      --tblr-btn-color-bg: rgba(var(--tblr-#{$color}-100), 1);
+      --tblr-btn-color-interactive: rgba(var(--tblr-#{$color}-100), 1);
+      --tblr-btn-color-text: #fafbfc;
+      --tblr-btn-shadow: 0 10px 20px -10px var(--tblr-btn-color-interactive);
+      color: var(--tblr-btn-color);
+      border-color: var(--tblr-btn-color) !important;
+      background: transparent;
+      &:hover {
+        color: var(--tblr-btn-color-text);
+        background: var(--tblr-btn-color-interactive);
+        border-color: var(--tblr-btn-color) !important;
+        box-shadow: var(--tblr-btn-shadow);
+      }
+    }
+
+    .btn-outline-light {
+      color: var(--tblr-dark);
+      border-color: rgba(var(--tblr-gray-100), 0.25) !important;
+      &:hover {
+        color: var(--tblr-dark);
+        background: var(--tblr-light);
+        border-color: rgba(var(--tblr-gray-100), 0.25) !important;
+      }
+    }
+  }
+}
+
+.btn {
+  --tblr-btn-font-weight: var(--tblr-font-weight-normal);
+  --tblr-btn-font-size: var(--tblr-body-font-size);
+
+  &.btn-sm {
+    --tblr-btn-font-size: var(--tblr-small-font-size);
+    border-radius: $btn-border-radius-sm;
+    padding: 6px 13px;
+  }
+  &.btn-status {
+    &.btn-sm {
+      --tblr-btn-icon-size: 1.25rem;
+      --tblr-btn-line-height: 1;
+      gap: 5px;
+    }
+    .icon {
+      font-size: 21px;
+      line-height: 1;
+    }
+  }
+}

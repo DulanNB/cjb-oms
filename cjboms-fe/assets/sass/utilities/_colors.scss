@@ -1,0 +1,50 @@
+@use "../abstracts" as *;
+
+// variant text/bg/border start
+@each $color, $shade in $theme-colors {
+  @each $prop, $value in $shade {
+    @if nth($prop, 1) == 100 {
+      .text-#{$color} {
+        color: rgba(var(--tblr-#{$color}-100), 1);
+      }
+      .bg-#{$color} {
+        background-color: rgba(var(--tblr-#{$color}-100), 1);
+      }
+      .border-#{$color} {
+        border-color: rgba(var(--tblr-#{$color}-100), 1);
+      }
+    } @else if nth($prop, 1) < 100 {
+      .bg-#{$color}-#{$prop} {
+        background-color: rgb(var(--tblr-#{$color}-#{$prop}));
+      }
+    } @else {
+      .text-#{$color}-#{$prop} {
+        color: rgba(var(--tblr-#{$color}-#{$prop}), 1);
+      }
+      .bg-#{$color}-#{$prop} {
+        background-color: rgba(var(--tblr-#{$color}-#{$prop}), 1);
+      }
+      .border-#{$color}-#{$prop} {
+        border-color: rgba(var(--tblr-#{$color}-#{$prop}), 1);
+      }
+    }
+    // variant text/bg/border end
+
+    .badge,
+    .btn-status {
+      &.bg-#{$color} {
+        background-color: rgba(var(--tblr-#{$color}-100), 0.05);
+        color: rgba(var(--tblr-#{$color}-100), 1);
+      }
+    }
+    .dropdown__status {
+      .bg-#{$color} {
+        // background-color: rgba(var(--tblr-#{$color}-100), 0.05);
+        background-color: var(--tblr-white);
+        color: rgba(var(--tblr-#{$color}-100), 1);
+        // border-color: rgba(var(--tblr-#{$color}-100), 1);
+        border-color: var(--tblr-grey);
+      }
+    }
+  }
+}

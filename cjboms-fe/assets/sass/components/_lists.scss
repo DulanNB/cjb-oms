@@ -1,0 +1,42 @@
+@use "../abstracts" as *;
+
+.list-group {
+  --tblr-list-group-color: var(--tblr-primary);
+  --tblr-list-group-bg: inherit;
+  --tblr-list-group-border-color: var(--tblr-border-color);
+  --tblr-list-group-border-width: var(--tblr-border-width);
+  --tblr-list-group-border-radius: var(--tblr-border-radius);
+  --tblr-list-group-item-padding-x: 1.25rem;
+  --tblr-list-group-item-padding-y: 0.8rem;
+  --tblr-list-group-action-color: inherit;
+  --tblr-list-group-action-hover-color: var(--tblr-emphasis-color);
+  --tblr-list-group-action-hover-bg: rgb(var(--tblr-grey-5));
+  --tblr-list-group-action-active-color: var(--tblr-primary);
+  --tblr-list-group-action-active-bg: rgb(var(--tblr-secondary-20));
+  --tblr-list-group-disabled-color: var(--tblr-secondary-color);
+  --tblr-list-group-disabled-bg: inherit;
+  --tblr-list-group-active-color: inherit;
+  --tblr-list-group-active-bg: var(--tblr-active-bg);
+  --tblr-list-group-active-border-color: var(--tblr-border-color);
+}
+
+.list-group-item {
+  border-left: 2px solid transparent;
+  &.nuxt-link-active {
+    background-color: var(--tblr-list-group-action-active-bg);
+    color: var(--tblr-list-group-action-active-color);
+    border-left: 2px solid var(--tblr-primary);
+    font-weight: 600;
+
+    i {
+      font-weight: 700;
+    }
+  }
+  i {
+    font-size: 20px;
+    line-height: 1.8;
+  }
+  &:hover:not(.nuxt-link-active) {
+    background-color: var(--tblr-list-group-action-hover-bg);
+  }
+}

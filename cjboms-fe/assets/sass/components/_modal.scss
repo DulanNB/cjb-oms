@@ -1,0 +1,30 @@
+@use "../abstracts" as *;
+
+.modal {
+  --tblr-modal-border-radius: #{$border-radius};
+  --tblr-modal-border-status-radius: #{$border-radius} #{$border-radius} 0 0;
+  --tblr-modal-inner-border-radius: #{$border-radius};
+
+  .modal-status {
+    border-radius: var(--tblr-modal-border-status-radius);
+    left: 5px;
+    right: 5px;
+  }
+}
+
+.modal-content {
+  .btn-close {
+    top: -8px;
+    right: -8px;
+    background-color: var(--tblr-white);
+    opacity: 1;
+    width: 2rem;
+    height: 2rem;
+    box-shadow: -7px 4px 15px 8px rgba(0, 0, 0, 0.04);
+    border-radius: $border-radius-sm;
+    transition: all 0.25s ease;
+    &:hover {
+      transform: translate(10%, -10%);
+    }
+  }
+}

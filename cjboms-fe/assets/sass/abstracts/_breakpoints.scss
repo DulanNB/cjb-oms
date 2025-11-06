@@ -1,0 +1,24 @@
+$breakpoints: (
+  mobile: 318px,
+  x-small: 375px,
+  small: 480px,
+  md-small: 575px,
+  lg-small: 650px,
+  tablet: 767px,
+  medium: 991px,
+  desktop: 1023px,
+  ipad: 1024px,
+  widescreen: 1199px,
+  laptop-sm: 1300px,
+  laptop: 1399px,
+  fullhd: 1407px,
+);
+
+/* 
+@include mq(desktop) {
+}
+
+@include minq(desktop) {
+}
+
+*/

@@ -1,0 +1,99 @@
+@use "../abstracts" as *;
+
+@each $size-name, $size-value in $sizes {
+  .margin {
+    &-#{$size-name} {
+      margin: $size-value;
+
+      &-block-start {
+        margin-block-start: $size-value;
+      }
+      &-block-end {
+        margin-block-end: $size-value;
+      }
+      &-block {
+        margin-block: $size-value;
+      }
+      &-inline-start {
+        margin-inline-start: $size-value;
+      }
+      &-inline-end {
+        margin-inline-end: $size-value;
+      }
+      &-inline {
+        margin-inline: $size-value;
+      }
+    }
+  }
+  .padding {
+    &-#{$size-name} {
+      padding: $size-value;
+
+      &-block-start {
+        padding-block-start: $size-value;
+      }
+      &-block-end {
+        padding-block-end: $size-value;
+      }
+      &-block {
+        padding-block: $size-value;
+      }
+      &-inline-start {
+        padding-inline-start: $size-value;
+      }
+      &-inline-end {
+        padding-inline-end: $size-value;
+      }
+      &-inline {
+        padding-inline: $size-value;
+      }
+    }
+  }
+  .br {
+    &-#{$size-name} {
+      border-radius: $size-value;
+    }
+  }
+}
+
+/*---------Custom Width Height Options--------------*/
+
+@for $j from 1 through 1000 {
+  .w-#{$j}rem {
+    width: #{$j}rem;
+  }
+
+  .max-w-#{$j}rem {
+    max-width: #{$j}rem;
+  }
+
+  .min-w-#{$j}rem {
+    min-width: #{$j}rem;
+  }
+
+  .h-#{$j}rem {
+    height: #{$j}rem;
+  }
+
+  .max-h-#{$j}rem {
+    min-height: #{$j}rem;
+  }
+
+  .min-h-#{$j}rem {
+    min-height: #{$j}rem;
+  }
+
+  // absolute positioning
+  .top-#{$j}px {
+    top: #{$j}px !important;
+  }
+  .right-#{$j}px {
+    right: #{$j}px !important;
+  }
+  .bottom-#{$j}rem {
+    bottom: #{$j}px !important;
+  }
+  .left-#{$j}rem {
+    left: #{$j}px !important;
+  }
+}

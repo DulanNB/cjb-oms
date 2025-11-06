@@ -1,0 +1,9 @@
+@use "sass:map";
+
+@function clr($color) {
+  @if map.has-key($theme-colors, $color) {
+    @return map.get($theme-colors, $color);
+  } @else {
+    @error '$theme-colors does not have that color!';
+  }
+}

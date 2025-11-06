@@ -1,0 +1,41 @@
+@use "../abstracts" as *;
+
+.card {
+  --tblr-card-spacer-y: 1rem;
+  --tblr-card-spacer-x: 1.25rem;
+  --tblr-card-title-spacer-y: 1.25rem;
+  --tblr-card-border-width: 1px;
+  --tblr-card-border-color: rgba(98, 105, 118, 0.16);
+  --tblr-card-tabs-border-color: transparent;
+  --tblr-card-border-radius: #{$border-radius};
+  --tblr-card-inner-border-radius: #{$border-radius};
+  --tblr-card-cap-padding-y: 1rem;
+  --tblr-card-cap-padding-x: 1.25rem;
+  --tblr-card-cap-bg: #fafbfc;
+  --tblr-card-cap-color: #626976;
+  --tblr-card-bg: #ffffff;
+  --tblr-card-shadow: 0 4px 15px 0 rgba(var(--tblr-dark-100), 0.12);
+  --tblr-card-img-overlay-padding: 1rem;
+  --tblr-card-group-margin: 1.5rem;
+  .nav-tabs {
+    --tblr-nav-tabs-link-active-bg: transparent;
+    --tblr-nav-tabs-link-active-border-color: transparent;
+    --tblr-nav-tabs-link-hover-border-color: transparent;
+    --tblr-nav-tabs-link-active-color: var(--tblr-primary);
+  }
+  .nav-link {
+    --tblr-nav-link-padding-y: 0.8rem;
+    --tblr-nav-link-padding-x: 1.25rem;
+  }
+
+  .card-status-top {
+    left: 5px;
+    right: 5px;
+  }
+  &__active {
+    border: 1px solid rgba(var(--tblr-primary-200), 1);
+  }
+  .card-footer:last-child {
+    border-radius: #{$border-radius-md};
+  }
+}
