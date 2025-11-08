@@ -43,7 +43,7 @@
           <li class="nav-item">
             <NuxtLink 
               class="nav-link" 
-              to="/admin/patients"
+              to="/admin/orders"
               active-class="active-link"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" 
@@ -110,26 +110,6 @@ const handleLogout = async () => {
   }
 }
 
-const getOrganizations = async () => {
-  try {
-    const csrfToken = useCookie('XSRF-TOKEN')
-
-    organizationData.value = await $fetch('/api/admin/organizations', {
-      baseURL: config.public.apiUrl,
-      credentials: 'include',
-      headers: {
-        'Accept': 'application/json',
-        'X-XSRF-TOKEN': csrfToken.value ? decodeURIComponent(csrfToken.value) : ''
-      },
-      params: {
-        per_page: 100
-      }
-    })
-  } catch (error) {
-    console.error('Error fetching organizations:', error)
-  }
-}
-
 const getCurrentOrganization = () => {
   if (process.client && localStorage.getItem("organization")) {
     currentOrganization.value = JSON.parse(localStorage.getItem("organization"))
@@ -151,7 +131,6 @@ const goToOrganization = async (organization) => {
 
 // Lifecycle
 onMounted(() => {
-  getOrganizations()
   getCurrentOrganization()
 })
 </script>

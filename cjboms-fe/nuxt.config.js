@@ -62,10 +62,22 @@ export default defineNuxtConfig({
     }
   },
 
-  // Add route redirects
+  // Add route redirects and development proxy
   nitro: {
     routeRules: {
       '/': { redirect: '/admin/auth/login' }
+    },
+    devProxy: {
+      '/api': {
+        target: 'http://localhost:8000/api',
+        changeOrigin: true,
+        cookieDomainRewrite: 'localhost'
+      },
+      '/sanctum': {
+        target: 'http://localhost:8000/sanctum',
+        changeOrigin: true,
+        cookieDomainRewrite: 'localhost'
+      }
     }
   }
 });

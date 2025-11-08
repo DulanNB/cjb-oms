@@ -2,11 +2,10 @@
 import { useAuth } from '~/composables/useAuth'
 
 export default defineNuxtRouteMiddleware(async (to) => {
-  const { checkAuth } = useAuth()
+  const { loggedIn, user } = useAuth()
 
-  const isAuthenticated = await checkAuth()
-
-  if (!isAuthenticated) {
+  // Check if user is logged in based on localStorage state
+  if (!loggedIn.value || !user.value) {
     return navigateTo('/admin/auth/login')
   }
 })

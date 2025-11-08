@@ -121,26 +121,6 @@ const toggleSidebar = () => {
   }
 }
 
-const getOrganizations = async () => {
-  try {
-    const csrfToken = useCookie('XSRF-TOKEN')
-
-    organizationData.value = await $fetch('/api/admin/organizations', {
-      baseURL: config.public.apiUrl,
-      credentials: 'include',
-      headers: {
-        'Accept': 'application/json',
-        'X-XSRF-TOKEN': csrfToken.value ? decodeURIComponent(csrfToken.value) : ''
-      },
-      params: {
-        per_page: 100
-      }
-    })
-  } catch (error) {
-    console.error('Error fetching organizations:', error)
-  }
-}
-
 const getCurrentOrganization = () => {
   if (process.client && localStorage.getItem('organization')) {
     currentOrganization.value = JSON.parse(localStorage.getItem('organization'))
@@ -212,7 +192,6 @@ const handleClickOutside = (event) => {
 
 // Lifecycle hooks
 onMounted(() => {
-  getOrganizations()
   getCurrentOrganization()
   // getWaitingRoomCount()
 

@@ -444,8 +444,10 @@ const signup = async () => {
       }
     })
 
+    
+
     // Get user data after successful login (use the new token)
-    const user = await $fetch('/api/admin/profile/profile', {
+    const user = await $fetch('/api/admin/profile', {
       baseURL: config.public.apiUrl,
       credentials: 'include',
       headers: {

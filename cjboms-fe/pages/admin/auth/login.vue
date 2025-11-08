@@ -231,19 +231,41 @@ const login = async () => {
     loginForm.loading = true
 
     // Get CSRF token first using Sanctum's endpoint
-    await $fetch('/sanctum/csrf-cookie', {
+    const csrfResponse = await $fetch('/sanctum/csrf-cookie', {
       baseURL: config.public.apiUrl,
       credentials: 'include'
     })
 
     // Small delay to ensure cookie is set
-    await new Promise(resolve => setTimeout(resolve, 100))
+    await new Promise(resolve => setTimeout(resolve, 200))
 
-    // Get CSRF token from cookie
-    const csrfCookie = useCookie('XSRF-TOKEN')
-    const csrfToken = csrfCookie.value ? decodeURIComponent(csrfCookie.value) : ''
+    // Get CSRF token from cookie - try multiple ways
+    let csrfToken = ''
+    
+    if (process.client) {
+      // Method 1: Try to get from document.cookie
+      const cookies = document.cookie.split(';')
+      const xsrfCookie = cookies.find(c => c.trim().startsWith('XSRF-TOKEN='))
+      if (xsrfCookie) {
+        csrfToken = decodeURIComponent(xsrfCookie.split('=')[1])
+        console.log('CSRF Token from document.cookie:', csrfToken)
+      }
+      
+      // Method 2: Try useCookie as fallback
+      if (!csrfToken) {
+        const csrfCookie = useCookie('XSRF-TOKEN')
+        if (csrfCookie.value) {
+          csrfToken = decodeURIComponent(csrfCookie.value)
+          console.log('CSRF Token from useCookie:', csrfToken)
+        }
+      }
+      
+      console.log('All cookies:', document.cookie)
+    }
 
-    console.log('CSRF Token:', csrfToken) // Debug log
+    if (!csrfToken) {
+      throw new Error('CSRF token not found. Please refresh the page and try again.')
+    }
 
     // Attempt login
     const response = await $fetch('/api/admin/profile/login', {
@@ -260,7 +282,7 @@ const login = async () => {
     })
 
     // Get user data after successful login
-    const user = await $fetch('/api/admin/profile/profile', {
+    const user = await $fetch('/api/admin/profile', {
       baseURL: config.public.apiUrl,
       credentials: 'include',
       headers: {

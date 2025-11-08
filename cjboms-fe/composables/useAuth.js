@@ -2,14 +2,25 @@
 export const useAuth = () => {
   const user = useState('auth.user', () => null)
   const loggedIn = useState('auth.loggedIn', () => false)
+  const isInitialized = useState('auth.initialized', () => false)
   const config = useRuntimeConfig()
 
   const setUser = (userData) => {
     user.value = userData
+    // Persist to localStorage
+    if (process.client && userData) {
+      localStorage.setItem('auth.user', JSON.stringify(userData))
+    } else if (process.client && !userData) {
+      localStorage.removeItem('auth.user')
+    }
   }
 
   const setLoggedIn = (status) => {
     loggedIn.value = status
+    // Persist to localStorage
+    if (process.client) {
+      localStorage.setItem('auth.loggedIn', status.toString())
+    }
   }
 
   const login = async (credentials) => {
@@ -37,7 +48,7 @@ export const useAuth = () => {
       })
 
       // Get user data
-      const userData = await $fetch('/api/admin/profile/profile', {
+      const userData = await $fetch('/api/admin/profile/', {
         baseURL: config.public.apiUrl,
         credentials: 'include',
         headers: {
@@ -79,11 +90,15 @@ export const useAuth = () => {
 
   const fetchUser = async () => {
     try {
-      const userData = await $fetch('/api/admin/profile/profile', {
+      const csrfToken = useCookie('XSRF-TOKEN')
+      
+      const userData = await $fetch('/api/admin/profile/', {
         baseURL: config.public.apiUrl,
         credentials: 'include',
         headers: {
-          'Accept': 'application/json'
+          'Accept': 'application/json',
+          'X-XSRF-TOKEN': csrfToken.value ? decodeURIComponent(csrfToken.value) : '',
+          'X-Requested-With': 'XMLHttpRequest'
         }
       })
 
@@ -100,25 +115,30 @@ export const useAuth = () => {
 
   const initAuth = async () => {
     if (process.client) {
-      try {
-        // First check if we have any session cookies
-        const sessionCookie = useCookie('laravel_session')
-        const xsrfCookie = useCookie('XSRF-TOKEN')
+      // Check if we have cached auth data in localStorage
+      const cachedUser = localStorage.getItem('auth.user')
+      const cachedLoggedIn = localStorage.getItem('auth.loggedIn')
 
-        if (!sessionCookie.value && !xsrfCookie.value) {
-          // No session cookies, user is not authenticated
+      // Restore from localStorage if available
+      // Don't check cookies here because cross-port cookies can't be read by JS
+      // If session expires, the 401 error handler will catch it
+      if (cachedUser && cachedLoggedIn === 'true') {
+        try {
+          user.value = JSON.parse(cachedUser)
+          loggedIn.value = true
+          console.log('Auth restored from localStorage')
+        } catch (parseError) {
+          console.error('Error parsing cached user:', parseError)
           setUser(null)
           setLoggedIn(false)
-          return
         }
-
-        await fetchUser()
-      } catch (error) {
-        console.log('Auth initialization failed:', error)
-        // User not authenticated
+      } else {
+        // No cached data, user needs to login
         setUser(null)
         setLoggedIn(false)
       }
+      
+      isInitialized.value = true
     }
   }
 
@@ -144,6 +164,7 @@ export const useAuth = () => {
   return {
     user: readonly(user),
     loggedIn: readonly(loggedIn),
+    isInitialized: readonly(isInitialized),
     login,
     logout,
     fetchUser,

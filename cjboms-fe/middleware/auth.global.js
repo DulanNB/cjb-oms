@@ -1,7 +1,7 @@
 // middleware/auth.global.js
 import { useAuth } from '~/composables/useAuth'
 
-export default defineNuxtRouteMiddleware((to, from) => {
+export default defineNuxtRouteMiddleware(async (to, from) => {
   // Define protected routes
   const protectedRoutes = ['/admin', '/compliance', '/dashboard']
 
@@ -16,7 +16,26 @@ export default defineNuxtRouteMiddleware((to, from) => {
   }
 
   if (isProtectedRoute) {
-    const { loggedIn, user } = useAuth()
+    const { loggedIn, user, isInitialized } = useAuth()
+
+    // Wait for auth initialization if not done yet
+    if (process.client && !isInitialized.value) {
+      // Wait a bit for the auth plugin to initialize
+      await new Promise(resolve => {
+        const checkInterval = setInterval(() => {
+          if (isInitialized.value) {
+            clearInterval(checkInterval)
+            resolve()
+          }
+        }, 50)
+        
+        // Timeout after 3 seconds
+        setTimeout(() => {
+          clearInterval(checkInterval)
+          resolve()
+        }, 3000)
+      })
+    }
 
     // Check if user is logged in
     if (!loggedIn.value || !user.value) {

@@ -25,9 +25,7 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 // Admin routes
-Route::prefix('admin')->group(function () {
-    // Admin Profile Routes - Load from Profile/api.php (with web middleware for sessions)
-    Route::prefix('profile')->middleware(['web'])->group(function () {
-        require __DIR__ . '/../src/Admin/Profile/api.php';
-    });
+Route::prefix('admin')->middleware(['web'])->group(function () {
+    // Load all admin routes from single consolidated file
+    require __DIR__ . '/../src/Admin/api.php';
 });
