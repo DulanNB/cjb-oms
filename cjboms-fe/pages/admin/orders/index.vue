@@ -469,6 +469,7 @@ definePageMeta({
 })
 
 const config = useRuntimeConfig()
+const csrfToken = useCookie('XSRF-TOKEN')
 
 const {$toast} = useNuxtApp()
 
@@ -650,26 +651,17 @@ const ordersInputUpdates = (values) => {
 
 const updateOrderTableData = async (page = 1, per_page = 15, sort = "") => {
   ordersTableAttributes.value.loading = true;
+  
   try {
-    // Get fresh CSRF token before making the request
-    const csrfResponse = await $fetch('/sanctum/csrf-cookie', {
-      baseURL: config.public.apiUrl,
-      credentials: 'include'
-    })
-    // Small delay to ensure cookie is set
-    await new Promise(resolve => setTimeout(resolve, 100));
-
-    // Get CSRF token from cookie
-    const csrfToken = getCsrfToken();
-
+    
     const response = await $fetch("/api/admin/orders", {
       method: 'GET',
       baseURL: config.public.apiUrl,
       credentials: 'include',
       headers: {
         'Accept': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest',
-        'X-XSRF-TOKEN': csrfToken
+        'X-XSRF-TOKEN': csrfToken.value ? decodeURIComponent(csrfToken.value) : '',
+        'X-Requested-With': 'XMLHttpRequest'
       },
       params: {
         per_page,
