@@ -461,15 +461,30 @@
 </template>
 
 <script setup>
+import { useAuth } from '~/composables/useAuth'
+
 // Define layout for Nuxt 3
 definePageMeta({
   layout: 'dashboard-admin'
 })
 
+const config = useRuntimeConfig()
+
 const {$toast} = useNuxtApp()
-const config = useRuntimeConfig();
-const csrfCookie = useCookie('XSRF-TOKEN')
-const csrfToken = csrfCookie.value ? decodeURIComponent(csrfCookie.value) : ''
+
+// Function to get CSRF token from cookies
+const getCsrfToken = () => {
+  if (process.client) {
+    const cookies = document.cookie.split(';')
+    const xsrfCookie = cookies.find(c => c.trim().startsWith('XSRF-TOKEN='))
+    if (xsrfCookie) {
+      const token = decodeURIComponent(xsrfCookie.split('=')[1])
+      console.log('CSRF Token from document.cookie:', token)
+      return token
+    }
+  }
+  return ''
+}
 
 // Modal states
 const showOrderModal = ref(false);
@@ -637,17 +652,15 @@ const updateOrderTableData = async (page = 1, per_page = 15, sort = "") => {
   ordersTableAttributes.value.loading = true;
   try {
     // Get fresh CSRF token before making the request
-    await $fetch('/sanctum/csrf-cookie', {
+    const csrfResponse = await $fetch('/sanctum/csrf-cookie', {
       baseURL: config.public.apiUrl,
       credentials: 'include'
-    });
-
+    })
     // Small delay to ensure cookie is set
     await new Promise(resolve => setTimeout(resolve, 100));
 
     // Get CSRF token from cookie
-    const csrfCookie = useCookie('XSRF-TOKEN');
-    const csrfToken = csrfCookie.value ? decodeURIComponent(csrfCookie.value) : '';
+    const csrfToken = getCsrfToken();
 
     const response = await $fetch("/api/admin/orders", {
       method: 'GET',
@@ -683,11 +696,18 @@ const updateOrderTableData = async (page = 1, per_page = 15, sort = "") => {
       data: response.data.data,
     };
   } catch (error) {
+    console.error('Failed to fetch orders:', error);
+    console.error('Error details:', {
+      status: error?.status,
+      statusCode: error?.statusCode,
+      message: error?.message,
+      data: error?.data
+    });
     ordersTableAttributes.value.api_response = {
       total: 0,
       data: [],
     };
-    $toast.error('Failed to fetch orders.');
+    $toast.error(error?.data?.message || 'Failed to fetch orders.');
   } finally {
     ordersTableAttributes.value.loading = false;
   }
@@ -695,6 +715,16 @@ const updateOrderTableData = async (page = 1, per_page = 15, sort = "") => {
 
 const fetchItems = async () => {
   try {
+    // Get CSRF token
+    await $fetch('/sanctum/csrf-cookie', {
+      baseURL: config.public.apiUrl,
+      credentials: 'include'
+    });
+    
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
+    const csrfToken = getCsrfToken();
+
     const response = await $fetch("/api/admin/items/available", {
       method: 'GET',
       baseURL: config.public.apiUrl,
@@ -702,6 +732,7 @@ const fetchItems = async () => {
       headers: {
         'Accept': 'application/json',
         'X-Requested-With': 'XMLHttpRequest',
+        'X-XSRF-TOKEN': csrfToken
       }
     });
 
@@ -711,6 +742,7 @@ const fetchItems = async () => {
       price: item.price
     }));
   } catch (error) {
+    console.error('Failed to fetch items:', error);
     $toast.error('Failed to fetch items.');
   }
 }
@@ -807,6 +839,7 @@ const handleSubmit = () => {
 const saveOrder = async () => {
   uploading.value = true;
   try {
+    const csrfToken = getCsrfToken();
     const response = await $fetch('/api/admin/orders', {
       method: 'POST',
       baseURL: config.public.apiUrl,
@@ -839,6 +872,7 @@ const saveOrder = async () => {
 const updateOrder = async () => {
   uploading.value = true;
   try {
+    const csrfToken = getCsrfToken();
     const response = await $fetch(`/api/admin/orders/${selectedOrderId.value}`, {
       method: 'PUT',
       baseURL: config.public.apiUrl,
@@ -887,6 +921,7 @@ const handleStatusChange = async () => {
     return;
   }
   try {
+    const csrfToken = getCsrfToken();
     const response = await $fetch(`/api/admin/orders/${selectedOrderId.value}/status`, {
       method: 'PATCH',
       baseURL: config.public.apiUrl,
@@ -922,6 +957,7 @@ const closeDeleteModal = () => {
 
 const handleDelete = async () => {
   try {
+    const csrfToken = getCsrfToken();
     const response = await $fetch(`/api/admin/orders/${selectedOrderId.value}`, {
       method: 'DELETE',
       baseURL: config.public.apiUrl,
@@ -944,8 +980,32 @@ const handleDelete = async () => {
 }
 
 // Initialize
-onMounted(() => {
-  fetchItems();
+onMounted(async () => {
+  try {
+    // Get CSRF cookie first
+    await $fetch('/sanctum/csrf-cookie', {
+      baseURL: config.public.apiUrl,
+      credentials: 'include'
+    });
+    
+    // Small delay to ensure cookie is set
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
+    // Then fetch data - if this fails with 401, it means not authenticated
+    await fetchItems();
+    await updateOrderTableData();
+  } catch (error) {
+    console.error('Initialization error:', error);
+    if (error?.status === 401 || error?.statusCode === 401) {
+      // Clear localStorage and redirect to login
+      if (process.client) {
+        localStorage.removeItem('auth.user');
+        localStorage.removeItem('auth.loggedIn');
+      }
+      $toast.error('Session expired. Please login again.');
+      await navigateTo('/admin/auth/login');
+    }
+  }
 })
 
 useHead({
