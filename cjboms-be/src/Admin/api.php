@@ -29,7 +29,7 @@ Route::prefix('profile')->group(function () {
     Route::post('/login', [AuthController::class, 'login'])->name('admin.profile.login');
 
     // Protected Profile Routes (Require Authentication via Session/Cookie)
-    Route::middleware(['auth'])->group(function () {
+    Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('/', [AuthController::class, 'getProfile'])->name('admin.profile.get');
         Route::put('/', [AuthController::class, 'updateProfile'])->name('admin.profile.update');
         Route::delete('/', [AuthController::class, 'deleteProfile'])->name('admin.profile.delete');
@@ -38,7 +38,7 @@ Route::prefix('profile')->group(function () {
 });
 
 // =============================================================================
-// ITEM MODULE ROUTES  
+// ITEM MODULE ROUTES
 // =============================================================================
 
 Route::prefix('items')->group(function () {
@@ -46,14 +46,14 @@ Route::prefix('items')->group(function () {
     Route::get('/available', [ItemController::class, 'available'])->name('admin.items.available');
 
     // Protected Item Routes (Require Authentication via Session/Cookie)
-    Route::middleware(['auth'])->group(function () {
+    Route::middleware(['auth:sanctum'])->group(function () {
         // CRUD Operations
         Route::get('/', [ItemController::class, 'index'])->name('admin.items.index');
         Route::post('/', [ItemController::class, 'store'])->name('admin.items.store');
         Route::get('/{item}', [ItemController::class, 'show'])->name('admin.items.show');
         Route::put('/{item}', [ItemController::class, 'update'])->name('admin.items.update');
         Route::delete('/{item}', [ItemController::class, 'destroy'])->name('admin.items.destroy');
-        
+
         // Additional Item Management Routes
         Route::post('/{item}/toggle-active', [ItemController::class, 'toggleActive'])->name('admin.items.toggle-active');
         Route::put('/{item}/stock', [ItemController::class, 'updateStock'])->name('admin.items.update-stock');
@@ -61,12 +61,12 @@ Route::prefix('items')->group(function () {
 });
 
 // =============================================================================
-// ORDER MODULE ROUTES  
+// ORDER MODULE ROUTES
 // =============================================================================
 
 Route::prefix('orders')->group(function () {
     // Protected Order Routes (Require Authentication via Session/Cookie)
-    Route::middleware(['auth'])->group(function () {
+    Route::middleware(['auth:sanctum'])->group(function () {
         // CRUD Operations
         Route::get('/', [OrderController::class, 'index'])->name('admin.orders.index');
         Route::post('/', [OrderController::class, 'store'])->name('admin.orders.store');
@@ -75,7 +75,7 @@ Route::prefix('orders')->group(function () {
         Route::get('/{order}', [OrderController::class, 'show'])->name('admin.orders.show');
         Route::put('/{order}', [OrderController::class, 'update'])->name('admin.orders.update');
         Route::delete('/{order}', [OrderController::class, 'destroy'])->name('admin.orders.destroy');
-        
+
         // Additional Order Management Routes
         Route::patch('/{order}/status', [OrderController::class, 'updateStatus'])->name('admin.orders.update-status');
     });
