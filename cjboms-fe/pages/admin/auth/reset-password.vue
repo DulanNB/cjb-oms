@@ -3,7 +3,7 @@
     <div class="container-tight py-4">
       <div class="text-center mb-4">
         <a class="navbar-brand navbar-brand-autodark" href="."><img alt="" height="36"
-                                                                    src='~/assets/Logo_primary.png'></a>
+                                                                   ></a>
       </div>
       <form class="card card-md" @submit.prevent=sendResetLink>
         <div class="card-body">
