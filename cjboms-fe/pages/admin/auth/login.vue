@@ -268,7 +268,7 @@ const login = async () => {
     }
 
     // Attempt login
-    const response = await $fetch('/api/admin/profile/login', {
+    const response = await $fetch('/api/admin/login', {
       method: 'POST',
       baseURL: config.public.apiUrl,
       credentials: 'include',

@@ -3,10 +3,12 @@
 namespace Src\Admin\Profile\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
+use App\Models\Admin;
+use App\Models\Organization;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Src\Admin\Profile\Requests\LoginRequest;
 use Src\Admin\Profile\Requests\RegisterRequest;
@@ -18,56 +20,94 @@ class AuthController extends Controller
      */
     public function login(LoginRequest $request)
     {
-        $user = User::where('email', $request->email)->first();
+        $admin = Admin::where('email', $request->email)
+            ->with('organization')
+            ->first();
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
+        if (!$admin || !Hash::check($request->password, $admin->password)) {
             throw ValidationException::withMessages([
                 'email' => ['The provided credentials are incorrect.'],
             ]);
         }
 
-        // Optional: Check if user has admin role
-        // if (!$user->is_admin) {
-        //     throw ValidationException::withMessages([
-        //         'email' => ['You do not have admin access.'],
-        //     ]);
-        // }
+        // Check if admin is active
+        if (!$admin->is_active) {
+            throw ValidationException::withMessages([
+                'email' => ['Your account has been deactivated.'],
+            ]);
+        }
 
-        // Login using session/cookie
-        Auth::login($user, $request->boolean('remember'));
+        // Check if organization is active
+        if (!$admin->organization->is_active) {
+            throw ValidationException::withMessages([
+                'email' => ['Your organization has been deactivated.'],
+            ]);
+        }
+
+        // Login using session/cookie with admin guard
+        Auth::guard('admin')->login($admin, $request->boolean('remember'));
 
         // Regenerate session to prevent fixation attacks
         $request->session()->regenerate();
 
         return response()->json([
             'message' => 'Admin login successful',
-            'user' => $user,
+            'user' => $admin->load('organization'),
         ]);
     }
 
     /**
      * Admin Profile Registration - Cookie Based
+     * Creates both organization and admin account
      */
     public function register(RegisterRequest $request)
     {
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            // 'is_admin' => true, // Uncomment if needed
-            // 'role' => 'admin',  // Uncomment if needed
-        ]);
+        DB::beginTransaction();
+        
+        try {
+            // Generate organization name from admin's name if not provided
+            $organizationName = $request->organization_name 
+                ?? $request->first_name . ' ' . $request->last_name . "'s Organization";
 
-        // Login using session/cookie
-        Auth::login($user);
+            // Create organization first
+            $organization = Organization::create([
+                'name' => $organizationName,
+                'email' => $request->email,
+                'phone' => $request->phone ?? null,
+                'is_active' => true,
+            ]);
 
-        // Regenerate session
-        $request->session()->regenerate();
+            // Create admin with organization_id
+            $admin = Admin::create([
+                'organization_id' => $organization->id,
+                'first_name' => $request->first_name,
+                'last_name' => $request->last_name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'phone' => $request->phone ?? null,
+                'is_active' => true,
+            ]);
 
-        return response()->json([
-            'message' => 'Admin registration successful',
-            'user' => $user,
-        ], 201);
+            // Login using session/cookie with admin guard
+            Auth::guard('admin')->login($admin);
+
+            // Regenerate session
+            $request->session()->regenerate();
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Admin registration successful',
+                'user' => $admin->load('organization'),
+            ], 201);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            
+            return response()->json([
+                'message' => 'Registration failed',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 
     /**
@@ -75,7 +115,7 @@ class AuthController extends Controller
      */
     public function logout(Request $request)
     {
-        Auth::logout();
+        Auth::guard('admin')->logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
@@ -91,7 +131,7 @@ class AuthController extends Controller
     public function getProfile(Request $request)
     {
         return response()->json([
-            'data' => Auth::user(),
+            'data' => Auth::guard('admin')->user()->load('organization'),
         ]);
     }
 
@@ -100,48 +140,63 @@ class AuthController extends Controller
      */
     public function updateProfile(Request $request)
     {
-        $user = Auth::user();
+        $admin = Auth::guard('admin')->user();
 
         $request->validate([
-            'name' => 'sometimes|string|max:255',
-            'email' => 'sometimes|email|unique:users,email,' . $user->id,
+            'first_name' => 'sometimes|string|max:255',
+            'last_name' => 'sometimes|string|max:255',
+            'email' => 'sometimes|email|unique:admins,email,' . $admin->id,
             'password' => 'sometimes|string|min:8|confirmed',
+            'phone' => 'sometimes|nullable|string|max:20',
+            'avatar' => 'sometimes|nullable|string',
         ]);
 
-        if ($request->has('name')) {
-            $user->name = $request->name;
+        if ($request->has('first_name')) {
+            $admin->first_name = $request->first_name;
+        }
+
+        if ($request->has('last_name')) {
+            $admin->last_name = $request->last_name;
         }
 
         if ($request->has('email')) {
-            $user->email = $request->email;
+            $admin->email = $request->email;
         }
 
         if ($request->has('password')) {
-            $user->password = Hash::make($request->password);
+            $admin->password = Hash::make($request->password);
         }
 
-        $user->save();
+        if ($request->has('phone')) {
+            $admin->phone = $request->phone;
+        }
+
+        if ($request->has('avatar')) {
+            $admin->avatar = $request->avatar;
+        }
+
+        $admin->save();
 
         return response()->json([
             'message' => 'Profile updated successfully',
-            'user' => $user,
+            'user' => $admin->load('organization'),
         ]);
     }
 
     /**
-     * Delete Admin Profile (Soft delete or actual delete)
+     * Delete Admin Profile (Soft delete)
      */
     public function deleteProfile(Request $request)
     {
-        $user = Auth::user();
+        $admin = Auth::guard('admin')->user();
         
         // Logout first
-        Auth::logout();
+        Auth::guard('admin')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         
-        // Delete user account
-        $user->delete();
+        // Soft delete admin account
+        $admin->delete();
 
         return response()->json([
             'message' => 'Profile deleted successfully',

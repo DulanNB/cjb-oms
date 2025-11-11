@@ -70,7 +70,7 @@ export const useAuth = () => {
     try {
       const csrfToken = useCookie('XSRF-TOKEN')
 
-      await $fetch('/api/admin/profile/logout', {
+      await $fetch('/api/admin/logout', {
         method: 'POST',
         baseURL: config.public.apiUrl,
         credentials: 'include',

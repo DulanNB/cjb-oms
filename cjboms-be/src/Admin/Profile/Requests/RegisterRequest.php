@@ -20,9 +20,12 @@ class RegisterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
+            'organization_name' => 'nullable|string|max:255',
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:admins',
             'password' => 'required|string|min:8|confirmed',
+            'phone' => 'nullable|string|max:20',
         ];
     }
 
@@ -32,14 +35,18 @@ class RegisterRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required' => 'Name is required',
-            'name.max' => 'Name cannot exceed 255 characters',
+            'organization_name.max' => 'Organization name cannot exceed 255 characters',
+            'first_name.required' => 'First name is required',
+            'first_name.max' => 'First name cannot exceed 255 characters',
+            'last_name.required' => 'Last name is required',
+            'last_name.max' => 'Last name cannot exceed 255 characters',
             'email.required' => 'Email address is required',
             'email.email' => 'Please provide a valid email address',
             'email.unique' => 'This email is already registered',
             'password.required' => 'Password is required',
             'password.min' => 'Password must be at least 8 characters',
             'password.confirmed' => 'Password confirmation does not match',
+            'phone.max' => 'Phone number cannot exceed 20 characters',
         ];
     }
 }

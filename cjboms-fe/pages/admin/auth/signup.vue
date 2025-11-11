@@ -393,7 +393,8 @@ const signup = async () => {
 
     // Register user - prepare data for Laravel API
     const registrationData = {
-      name: `${signupForm.fields.first_name} ${signupForm.fields.last_name}`,
+      first_name: signupForm.fields.first_name,
+      last_name: signupForm.fields.last_name,
       email: signupForm.fields.email,
       password: signupForm.fields.password,
       password_confirmation: signupForm.fields.password_confirmation
