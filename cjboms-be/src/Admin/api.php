@@ -21,6 +21,7 @@ Route::get('/csrf-token', [AuthController::class, 'getCsrfToken'])->name('admin.
 
 Route::post('/login', [AuthController::class, 'login'])->name('admin.login');
 Route::prefix('profile')->group(function () {
+    Route::post('/login', [AuthController::class, 'login'])->name('admin.login');
     Route::post('/register', [AuthController::class, 'register'])->name('admin.register');
 
 });
