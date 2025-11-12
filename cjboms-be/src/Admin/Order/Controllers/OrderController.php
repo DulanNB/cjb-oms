@@ -18,15 +18,8 @@ class OrderController extends Controller
     {
         // Debug: Check authentication
         $user = $request->user();
-        
-        \Log::info('Orders index request', [
-            'authenticated' => $user ? 'yes' : 'no',
-            'user_id' => $user?->id,
-            'session_id' => $request->session()->getId(),
-            'has_sanctum_cookie' => $request->hasCookie(config('session.cookie')),
-            'cookies' => array_keys($request->cookies->all()),
-            'headers' => $request->headers->all(),
-        ]);
+
+
 
         $query = Order::with('item');
 
@@ -56,11 +49,6 @@ class OrderController extends Controller
         return response()->json([
             'message' => 'Orders retrieved successfully',
             'data' => $orders,
-            'debug' => [
-                'authenticated' => $user ? true : false,
-                'user_id' => $user?->id,
-                'total_orders_in_db' => Order::count(),
-            ]
         ]);
     }
 
@@ -150,7 +138,7 @@ class OrderController extends Controller
     public function byStatus(Request $request, $status)
     {
         $validStatuses = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
-        
+
         if (!in_array($status, $validStatuses)) {
             return response()->json([
                 'message' => 'Invalid status',
