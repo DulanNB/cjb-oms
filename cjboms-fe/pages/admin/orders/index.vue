@@ -621,10 +621,10 @@ const updateOrderTableData = async (page = 1, per_page = 15, sort = "") => {
 const fetchItems = async () => {
   try {
     // Get CSRF token
-    await $fetch('/sanctum/csrf-cookie', {
-      baseURL: config.public.apiUrl,
-      credentials: 'include'
-    });
+    // await $fetch('/sanctum/csrf-cookie', {
+    //   baseURL: config.public.apiUrl,
+    //   credentials: 'include'
+    // });
     
     await new Promise(resolve => setTimeout(resolve, 100));
     
@@ -886,10 +886,10 @@ const handleDelete = async () => {
 onMounted(async () => {
   try {
     // Get CSRF cookie first
-    await $fetch('/sanctum/csrf-cookie', {
-      baseURL: config.public.apiUrl,
-      credentials: 'include'
-    });
+    // await $fetch('/sanctum/csrf-cookie', {
+    //   baseURL: config.public.apiUrl,
+    //   credentials: 'include'
+    // });
     
     // Small delay to ensure cookie is set
     await new Promise(resolve => setTimeout(resolve, 100));
