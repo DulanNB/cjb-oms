@@ -15,6 +15,7 @@ class Order extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'organization_id',
         'customer_name',
         'order_number',
         'status',
@@ -48,6 +49,14 @@ class Order extends Model
                 $order->order_number = 'ORD-' . strtoupper(uniqid());
             }
         });
+    }
+
+    /**
+     * Get the organization that owns the order.
+     */
+    public function organization()
+    {
+        return $this->belongsTo(Organization::class);
     }
 
     /**

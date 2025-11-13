@@ -55,7 +55,7 @@
                     </div>
 
                     <!-- City Select -->
-                    <div class="col-12 position-relative">
+                    <div class="col-12">
                       <label class="form-label">City</label>
                       <select 
                         v-model="orderForm.city" 
@@ -66,13 +66,6 @@
                           {{ city }}
                         </option>
                       </select>
-                      <button 
-                        type="button" 
-                        class="btn btn-sm btn-warning position-absolute reset-btn"
-                        @click="resetCity"
-                      >
-                        RESET
-                      </button>
                       <span v-if="validationError.city" class="text-danger small">
                         {{ validationError.city }}
                       </span>
@@ -134,7 +127,7 @@
                     <!-- Lead From -->
                     <div class="col-12">
                       <label class="form-label">Lead From</label>
-                      <div class="d-flex gap-3">
+                      <div class="d-flex flex-wrap gap-3">
                         <div class="form-check">
                           <input 
                             v-model="orderForm.lead_from" 
@@ -184,6 +177,21 @@
                           </label>
                         </div>
                       </div>
+                    </div>
+
+                    <!-- Reset Button -->
+                    <div class="col-12">
+                      <button 
+                        type="button" 
+                        class="btn btn-sm btn-warning p-2"
+                        @click="resetForm"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-arrow-counterclockwise me-1" viewBox="0 0 16 16">
+                          <path fill-rule="evenodd" d="M8 3a5 5 0 1 1-4.546 2.914.5.5 0 0 0-.908-.417A6 6 0 1 0 8 2z"/>
+                          <path d="M8 4.466V.534a.25.25 0 0 0-.41-.192L5.23 2.308a.25.25 0 0 0 0 .384l2.36 1.966A.25.25 0 0 0 8 4.466"/>
+                        </svg>
+                        Reset Form
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -267,7 +275,7 @@
                     <div class="col-12">
                       <div class="d-flex align-items-center justify-content-between mb-2">
                         <h5 class="mb-0">Added Products</h5>
-                        <span class="badge bg-danger rounded-circle">{{ addedProducts.length }}</span>
+                        <span class="badge bg-red-lt">{{ addedProducts.length }}</span>
                       </div>
                       
                       <div v-if="addedProducts.length === 0" class="text-center text-muted py-5">
@@ -280,13 +288,15 @@
                           :key="index"
                           class="product-item d-flex justify-content-between align-items-center p-2 border-bottom"
                         >
-                          <div>
-                            <strong>{{ product.name }}</strong>
+                          <div class="flex-grow-1">
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                              <strong>{{ product.name }}</strong>
+                              <span v-if="product.is_invoiced" class="badge badge-sm bg-green-lt">Invoiced</span>
+                            </div>
                             <div class="small text-muted">
                               Qty: {{ product.qty }} | 
                               Sale: Rs {{ product.sale_amount }} | 
                               Del Fee: Rs {{ product.del_fee }}
-                              <span v-if="product.is_invoiced" class="badge bg-success ms-1">Invoiced</span>
                             </div>
                           </div>
                           <button 
@@ -411,8 +421,22 @@ const selectProduct = (selectedProduct) => {
   }
 }
 
-const resetCity = () => {
-  orderForm.value.city = ''
+const resetForm = () => {
+  orderForm.value = {
+    customer_name: '',
+    address: '',
+    city: '',
+    contact_number_one: '',
+    contact_number_two: '',
+    email: '',
+    other: '',
+    due_date: '',
+    lead_from: 'facebook',
+    status: 'pending',
+    notes: ''
+  }
+  validationError.value = {}
+  $toast.info('Form reset successfully')
 }
 
 const addProduct = () => {
@@ -612,15 +636,6 @@ useHead({
   box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.1);
 }
 
-.reset-btn {
-  top: 32px;
-  right: 15px;
-  padding: 0.25rem 0.75rem;
-  font-size: 11px;
-  font-weight: 600;
-  z-index: 10;
-}
-
 .products-list {
   max-height: 300px;
   overflow-y: auto;
@@ -655,12 +670,25 @@ useHead({
 }
 
 .badge {
+  font-size: 11px;
+  padding: 0.25rem 0.5rem;
+  font-weight: 600;
+}
+
+.badge-sm {
+  font-size: 0.625rem;
+  padding: 0.125rem 0.375rem;
+  line-height: 1.2;
+}
+
+.badge.rounded-circle {
   width: 24px;
   height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 12px;
+  padding: 0;
 }
 
 .spinner-border-sm {
@@ -686,6 +714,10 @@ useHead({
 .form-check-label {
   cursor: pointer;
   font-size: 14px;
+}
+
+.flex-grow-1 {
+  flex-grow: 1;
 }
 
 .btn-info {

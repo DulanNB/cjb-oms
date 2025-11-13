@@ -18,7 +18,10 @@ class OrderController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Order::with('orderItems.product');
+        $organizationId = auth()->guard('admin')->user()->organization_id;
+        
+        $query = Order::with('orderItems.product')
+            ->where('organization_id', $organizationId);
 
         // Filter by status
         if ($request->has('status') && $request->status) {
@@ -68,6 +71,9 @@ class OrderController extends Controller
             $orderItemsData = $validatedData['order_items'] ?? [];
             unset($validatedData['order_items']);
 
+            // Add organization_id from authenticated admin
+            $validatedData['organization_id'] = auth()->guard('admin')->user()->organization_id;
+
             // Create the order
             $order = Order::create($validatedData);
 
@@ -105,6 +111,14 @@ class OrderController extends Controller
      */
     public function show(Order $order)
     {
+        // Verify order belongs to admin's organization
+        $organizationId = auth()->guard('admin')->user()->organization_id;
+        if ($order->organization_id !== $organizationId) {
+            return response()->json([
+                'message' => 'Unauthorized access to this order'
+            ], 403);
+        }
+
         $order->load('orderItems.product');
 
         return response()->json([
@@ -118,6 +132,14 @@ class OrderController extends Controller
      */
     public function update(UpdateOrderRequest $request, Order $order)
     {
+        // Verify order belongs to admin's organization
+        $organizationId = auth()->guard('admin')->user()->organization_id;
+        if ($order->organization_id !== $organizationId) {
+            return response()->json([
+                'message' => 'Unauthorized access to this order'
+            ], 403);
+        }
+
         $validatedData = $request->validated();
 
         DB::beginTransaction();
@@ -178,6 +200,14 @@ class OrderController extends Controller
      */
     public function destroy(Order $order)
     {
+        // Verify order belongs to admin's organization
+        $organizationId = auth()->guard('admin')->user()->organization_id;
+        if ($order->organization_id !== $organizationId) {
+            return response()->json([
+                'message' => 'Unauthorized access to this order'
+            ], 403);
+        }
+
         $order->delete();
 
         return response()->json([
@@ -190,6 +220,14 @@ class OrderController extends Controller
      */
     public function updateStatus(Request $request, Order $order)
     {
+        // Verify order belongs to admin's organization
+        $organizationId = auth()->guard('admin')->user()->organization_id;
+        if ($order->organization_id !== $organizationId) {
+            return response()->json([
+                'message' => 'Unauthorized access to this order'
+            ], 403);
+        }
+
         $request->validate([
             'status' => 'required|string|in:pending,processing,shipped,delivered,cancelled'
         ]);
@@ -207,6 +245,8 @@ class OrderController extends Controller
      */
     public function byStatus(Request $request, $status)
     {
+        $organizationId = auth()->guard('admin')->user()->organization_id;
+        
         $validStatuses = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
         
         if (!in_array($status, $validStatuses)) {
@@ -216,6 +256,7 @@ class OrderController extends Controller
         }
 
         $orders = Order::with('orderItems.product')
+            ->where('organization_id', $organizationId)
             ->status($status)
             ->orderBy('created_at', 'desc')
             ->paginate($request->get('per_page', 15));
@@ -231,8 +272,11 @@ class OrderController extends Controller
      */
     public function statistics()
     {
+        $organizationId = auth()->guard('admin')->user()->organization_id;
+        
         // Calculate total revenue from delivered orders
         $deliveredOrders = Order::with('orderItems')
+            ->where('organization_id', $organizationId)
             ->whereIn('status', ['delivered'])
             ->get();
         
@@ -241,14 +285,16 @@ class OrderController extends Controller
         });
 
         $stats = [
-            'total' => Order::count(),
-            'pending' => Order::pending()->count(),
-            'processing' => Order::processing()->count(),
-            'shipped' => Order::shipped()->count(),
-            'delivered' => Order::delivered()->count(),
-            'cancelled' => Order::cancelled()->count(),
+            'total' => Order::where('organization_id', $organizationId)->count(),
+            'pending' => Order::where('organization_id', $organizationId)->pending()->count(),
+            'processing' => Order::where('organization_id', $organizationId)->processing()->count(),
+            'shipped' => Order::where('organization_id', $organizationId)->shipped()->count(),
+            'delivered' => Order::where('organization_id', $organizationId)->delivered()->count(),
+            'cancelled' => Order::where('organization_id', $organizationId)->cancelled()->count(),
             'total_revenue' => $totalRevenue,
-            'total_order_items' => OrderItem::count(),
+            'total_order_items' => OrderItem::whereHas('order', function($query) use ($organizationId) {
+                $query->where('organization_id', $organizationId);
+            })->count(),
         ];
 
         return response()->json([

@@ -79,7 +79,7 @@
 
             <Table :attributes="ordersTableAttributes" class="mb-3" @inputUpdates="ordersInputUpdates">
               <template #order_number="{ record }">
-                <span class="fw-semibold">{{ record.order_number }}</span>
+                <span class="fw-semibold">#ORD-{{ record.id }}</span>
               </template>
 
               <template #customer_name="{ record }">
@@ -235,8 +235,8 @@
                               <td>Rs {{ item.del_fee }}</td>
                               <td>Rs {{ ((item.sale_amount * item.qty) + parseFloat(item.del_fee || 0)).toFixed(2) }}</td>
                               <td>
-                                <span v-if="item.is_invoiced" class="badge bg-success">Yes</span>
-                                <span v-else class="badge bg-secondary">No</span>
+                                <span v-if="item.is_invoiced" class="badge badge-sm bg-green-lt">Yes</span>
+                                <span v-else class="badge badge-sm bg-secondary">No</span>
                               </td>
                             </tr>
                           </tbody>
@@ -251,88 +251,6 @@
                     </div>
                     <div v-else class="alert alert-info">
                       No items in this order
-                    </div>
-
-                    <h6 class="mt-4 mb-3">Delivery Information</h6>
-                    
-                    <div class="form-group mb-3">
-                      <label class="form-label">Address</label>
-                      <textarea
-                          v-model="orderForm.address"
-                          class="form-control rounded-1"
-                          rows="2"
-                          readonly
-                      ></textarea>
-                    </div>
-
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group mb-3">
-                          <label class="form-label">City</label>
-                          <input
-                              v-model="orderForm.city"
-                              type="text"
-                              class="form-control rounded-1"
-                              readonly
-                          >
-                        </div>
-                      </div>
-                      <div class="col-md-6">
-                        <div class="form-group mb-3">
-                          <label class="form-label">Due Date</label>
-                          <input
-                              v-model="orderForm.due_date"
-                              type="date"
-                              class="form-control rounded-1"
-                              readonly
-                          >
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="form-group mb-3">
-                      <label class="form-label">Lead From</label>
-                      <input
-                          v-model="orderForm.lead_from"
-                          type="text"
-                          class="form-control rounded-1"
-                          readonly
-                      >
-                    </div>
-
-                    <div class="form-group mb-3">
-                      <label class="form-label">Status</label>
-                      <input
-                          v-model="orderForm.status"
-                          type="text"
-                          class="form-control rounded-1"
-                          readonly
-                      >
-                    </div>
-
-                    <div class="form-group mb-3">
-                      <label class="form-label">Notes</label>
-                      <textarea
-                          v-model="orderForm.notes"
-                          class="form-control rounded-1"
-                          rows="2"
-                          readonly
-                      ></textarea>
-                    </div>
-
-                    <div class="form-group mb-3">
-                      <label class="form-label">Other Information</label>
-                      <textarea
-                          v-model="orderForm.other"
-                          class="form-control rounded-1"
-                          rows="2"
-                          readonly
-                      ></textarea>
-                    </div>
-
-                    <!-- Remove all old fields below this (address_line_1, address_line_2, city, state, postal_code, country, phone, email, notes, weight, delivery_date) -->
-                    <div class="d-none">
-                      <!-- Keep this empty div to maintain structure -->
                     </div>
 
                     <!-- Dummy fields to keep structure -->
@@ -350,81 +268,6 @@
                         </div>
                       </div>
                     </div>
-
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group mb-3">
-                          <label class="form-label">Postal Code <span class="text-danger">*</span></label>
-                          <input
-                              v-model="orderForm.postal_code"
-                              type="text"
-                              class="form-control rounded-1"
-                              placeholder="Postal code"
-                              :disabled="isViewMode"
-                          >
-                          <span class="validation-error-message">
-                            {{ validationError.postal_code }}
-                          </span>
-                        </div>
-                      </div>
-                      <div class="col-md-6">
-                        <div class="form-group mb-3">
-                          <label class="form-label">Country <span class="text-danger">*</span></label>
-                          <input
-                              v-model="orderForm.country"
-                              type="text"
-                              class="form-control rounded-1"
-                              placeholder="Country"
-                              :disabled="isViewMode"
-                          >
-                          <span class="validation-error-message">
-                            {{ validationError.country }}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <!-- Contact Section -->
-                    <h6 class="mt-4 mb-3">Contact Information</h6>
-
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group mb-3">
-                          <label class="form-label">Phone</label>
-                          <input
-                              v-model="orderForm.phone"
-                              type="text"
-                              class="form-control rounded-1"
-                              placeholder="Phone number"
-                              :disabled="isViewMode"
-                          >
-                        </div>
-                      </div>
-                      <div class="col-md-6">
-                        <div class="form-group mb-3">
-                          <label class="form-label">Email</label>
-                          <input
-                              v-model="orderForm.email"
-                              type="email"
-                              class="form-control rounded-1"
-                              placeholder="Email address"
-                              :disabled="isViewMode"
-                          >
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div class="form-group">
-                      <label class="form-label">Notes</label>
-                      <textarea
-                          v-model="orderForm.notes"
-                          class="form-control rounded-1"
-                          rows="3"
-                          placeholder="Add order notes..."
-                          :disabled="isViewMode"
-                        ></textarea>
-                    </div>
-
                   </div>
                   <div class="modal-footer-custom">
                     <button type="button" class="btn btn-light rounded-1" @click="closeOrderModal">
@@ -1053,7 +896,6 @@ onMounted(async () => {
     
     // Then fetch data - if this fails with 401, it means not authenticated
     await fetchItems();
-    await updateOrderTableData();
   } catch (error) {
     console.error('Initialization error:', error);
     if (error?.status === 401 || error?.statusCode === 401) {
@@ -1342,5 +1184,28 @@ useHead({
   font-size: 12px;
   margin-top: 4px;
   display: block;
+}
+
+.badge-sm {
+  font-size: 0.625rem;
+  padding: 0.125rem 0.375rem;
+  line-height: 1.2;
+}
+
+/* Mobile responsiveness for filter layout */
+@media (max-width: 767px) {
+  .card-body .row > .col-11,
+  .card-body .row > .col-1 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+  
+  .card-body .row > .col-1 {
+    margin-top: 1rem;
+  }
+  
+  .card-body .row > .col-1 .btn {
+    width: 100%;
+  }
 }
 </style>
