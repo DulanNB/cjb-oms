@@ -4,8 +4,10 @@ namespace Src\Admin\Order\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Models\OrderItem;
 use App\Models\Item;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Src\Admin\Order\Requests\StoreOrderRequest;
 use Src\Admin\Order\Requests\UpdateOrderRequest;
 
@@ -16,34 +18,28 @@ class OrderController extends Controller
      */
     public function index(Request $request)
     {
-        // Debug: Check authentication
-        $user = $request->user();
-        
-        \Log::info('Orders index request', [
-            'authenticated' => $user ? 'yes' : 'no',
-            'user_id' => $user?->id,
-            'session_id' => $request->session()->getId(),
-            'has_sanctum_cookie' => $request->hasCookie(config('session.cookie')),
-            'cookies' => array_keys($request->cookies->all()),
-            'headers' => $request->headers->all(),
-        ]);
-
-        $query = Order::with('item');
+        $query = Order::with('orderItems.product');
 
         // Filter by status
         if ($request->has('status') && $request->status) {
             $query->status($request->status);
         }
 
-        // Search by name, order number, email, or phone
+        // Search by customer name, order number, email, or contact numbers
         if ($request->has('search') && $request->search) {
             $search = $request->get('search');
             $query->where(function($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
+                $q->where('customer_name', 'like', "%{$search}%")
                   ->orWhere('order_number', 'like', "%{$search}%")
                   ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhere('phone', 'like', "%{$search}%");
+                  ->orWhere('contact_number_one', 'like', "%{$search}%")
+                  ->orWhere('contact_number_two', 'like', "%{$search}%");
             });
+        }
+
+        // Filter by lead source
+        if ($request->has('lead_from') && $request->lead_from) {
+            $query->where('lead_from', $request->lead_from);
         }
 
         // Sort options
@@ -56,11 +52,6 @@ class OrderController extends Controller
         return response()->json([
             'message' => 'Orders retrieved successfully',
             'data' => $orders,
-            'debug' => [
-                'authenticated' => $user ? true : false,
-                'user_id' => $user?->id,
-                'total_orders_in_db' => Order::count(),
-            ]
         ]);
     }
 
@@ -71,19 +62,42 @@ class OrderController extends Controller
     {
         $validatedData = $request->validated();
 
-        // Get item to calculate price if not provided
-        if (!isset($validatedData['price'])) {
-            $item = Item::findOrFail($validatedData['item_id']);
-            $validatedData['price'] = $item->price;
+        DB::beginTransaction();
+        try {
+            // Extract order items from validated data
+            $orderItemsData = $validatedData['order_items'] ?? [];
+            unset($validatedData['order_items']);
+
+            // Create the order
+            $order = Order::create($validatedData);
+
+            // Create order items
+            foreach ($orderItemsData as $itemData) {
+                // Get item price if sale_amount not provided
+                if (!isset($itemData['sale_amount'])) {
+                    $item = Item::findOrFail($itemData['product_id']);
+                    $itemData['sale_amount'] = $item->price;
+                }
+
+                $order->orderItems()->create($itemData);
+            }
+
+            $order->load('orderItems.product');
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Order created successfully',
+                'data' => $order
+            ], 201);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            
+            return response()->json([
+                'message' => 'Failed to create order',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        $order = Order::create($validatedData);
-        $order->load('item');
-
-        return response()->json([
-            'message' => 'Order created successfully',
-            'data' => $order
-        ], 201);
     }
 
     /**
@@ -91,7 +105,7 @@ class OrderController extends Controller
      */
     public function show(Order $order)
     {
-        $order->load('item');
+        $order->load('orderItems.product');
 
         return response()->json([
             'message' => 'Order retrieved successfully',
@@ -106,13 +120,57 @@ class OrderController extends Controller
     {
         $validatedData = $request->validated();
 
-        $order->update($validatedData);
-        $order->load('item');
+        DB::beginTransaction();
+        try {
+            // Extract order items from validated data
+            $orderItemsData = $validatedData['order_items'] ?? [];
+            unset($validatedData['order_items']);
 
-        return response()->json([
-            'message' => 'Order updated successfully',
-            'data' => $order->fresh()
-        ]);
+            // Update the order
+            $order->update($validatedData);
+
+            // Handle order items update
+            if (!empty($orderItemsData)) {
+                // Get existing order item IDs
+                $existingItemIds = $order->orderItems()->pluck('id')->toArray();
+                $updatedItemIds = [];
+
+                foreach ($orderItemsData as $itemData) {
+                    if (isset($itemData['id']) && in_array($itemData['id'], $existingItemIds)) {
+                        // Update existing order item
+                        $orderItem = OrderItem::find($itemData['id']);
+                        $orderItem->update($itemData);
+                        $updatedItemIds[] = $itemData['id'];
+                    } else {
+                        // Create new order item
+                        $newItem = $order->orderItems()->create($itemData);
+                        $updatedItemIds[] = $newItem->id;
+                    }
+                }
+
+                // Delete order items that were removed
+                $itemsToDelete = array_diff($existingItemIds, $updatedItemIds);
+                if (!empty($itemsToDelete)) {
+                    OrderItem::whereIn('id', $itemsToDelete)->delete();
+                }
+            }
+
+            $order->load('orderItems.product');
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Order updated successfully',
+                'data' => $order->fresh('orderItems.product')
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            
+            return response()->json([
+                'message' => 'Failed to update order',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -157,7 +215,7 @@ class OrderController extends Controller
             ], 400);
         }
 
-        $orders = Order::with('item')
+        $orders = Order::with('orderItems.product')
             ->status($status)
             ->orderBy('created_at', 'desc')
             ->paginate($request->get('per_page', 15));
@@ -173,6 +231,15 @@ class OrderController extends Controller
      */
     public function statistics()
     {
+        // Calculate total revenue from delivered orders
+        $deliveredOrders = Order::with('orderItems')
+            ->whereIn('status', ['delivered'])
+            ->get();
+        
+        $totalRevenue = $deliveredOrders->sum(function ($order) {
+            return $order->total_amount;
+        });
+
         $stats = [
             'total' => Order::count(),
             'pending' => Order::pending()->count(),
@@ -180,7 +247,8 @@ class OrderController extends Controller
             'shipped' => Order::shipped()->count(),
             'delivered' => Order::delivered()->count(),
             'cancelled' => Order::cancelled()->count(),
-            'total_revenue' => Order::whereIn('status', ['delivered'])->sum('price'),
+            'total_revenue' => $totalRevenue,
+            'total_order_items' => OrderItem::count(),
         ];
 
         return response()->json([

@@ -66,14 +66,14 @@
                 <h3 class="card-title">Orders</h3>
               </div>
               <div>
-                <button type="button" class="btn default-btn-with-only-border" @click="openOrderAddModal"> 
+                <NuxtLink to="/admin/orders/create" class="btn default-btn-with-only-border"> 
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
                     <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
                   </svg>
                   <span class="ms-1">
                     Add New Order
                   </span>
-                </button>
+                </NuxtLink>
               </div>
             </div>
 
@@ -83,19 +83,34 @@
               </template>
 
               <template #customer_name="{ record }">
-                <span>{{ record.name }}</span>
+                <span>{{ record.customer_name }}</span>
               </template>
 
-              <template #item="{ record }">
-                <span>{{ record.item?.name || 'N/A' }}</span>
+              <template #items="{ record }">
+                <div v-if="record.order_items && record.order_items.length > 0">
+                  <span v-for="(item, index) in record.order_items" :key="index">
+                    {{ item.product?.name || 'N/A' }}<span v-if="index < record.order_items.length - 1">, </span>
+                  </span>
+                </div>
+                <span v-else>N/A</span>
               </template>
               
-              <template #price="{ record }">
-                <span>${{ record.price }}</span>
+              <template #total="{ record }">
+                <span v-if="record.order_items && record.order_items.length > 0">
+                  Rs {{ calculateOrderTotal(record.order_items) }}
+                </span>
+                <span v-else>Rs 0.00</span>
               </template>
 
-              <template #address="{ record }">
-                <span>{{ record.city }}, {{ record.country }}</span>
+              <template #contact="{ record }">
+                <div class="small">
+                  <div v-if="record.contact_number_one">{{ record.contact_number_one }}</div>
+                  <div v-if="record.email" class="text-muted">{{ record.email }}</div>
+                </div>
+              </template>
+
+              <template #location="{ record }">
+                <span>{{ record.city || 'N/A' }}</span>
               </template>
               
               <template #status="{ record }">
@@ -106,13 +121,13 @@
 
               <template #actions="{ record }">
                 <div class="d-flex gap-2">
-                  <a class="btn btn-outline-secondary rounded-1 px-2" @click="openOrderUpdateModal(record)">
+                  <NuxtLink :to="`/admin/orders/${record.id}`" class="btn btn-outline-secondary rounded-1 px-2">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square me-1 fs-bold" viewBox="0 0 16 16">
                       <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
                       <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
                     </svg>
                     Edit
-                  </a>
+                  </NuxtLink>
                   <a class="btn btn-outline-secondary rounded-1 px-2" @click="viewOrderModal(record)">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye fs-bold" viewBox="0 0 16 16">
                       <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z"/>
@@ -147,135 +162,186 @@
                 </div>
                 <form @submit.prevent="handleSubmit">
                   <div class="modal-body-custom">
+                    
+                    <h6 class="mb-3">Customer Information</h6>
                       
                     <div class="form-group mb-3">
-                      <label class="form-label">Customer Name <span class="text-danger">*</span></label>
+                      <label class="form-label">Customer Name</label>
                       <div>
                         <input
-                            v-model="orderForm.name"
+                            v-model="orderForm.customer_name"
                             type="text"
                             class="form-control rounded-1"
-                            placeholder="Enter customer name"
-                            :disabled="isViewMode"
+                            readonly
                         >
-                        <span class="validation-error-message">
-                          {{ validationError.name }}
-                        </span>
                       </div>
-                    </div>
-
-                    <div class="form-group mb-3">
-                      <label class="form-label">Item <span class="text-danger">*</span></label>
-                      <div class="input-icon">
-                        <Select
-                          ref="itemSelectRef"
-                          :attributes="items_data"
-                          :placeholder="'Select item'"
-                          :disabled="isViewMode"
-                          @selectUpdates="selectItem"
-                        />
-                        <span class="input-icon-addon">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" 
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" 
-                            class="icon icon-tabler icons-tabler-outline icon-tabler-chevron-down"><path stroke="none" d="M0 0h24v24H0z" 
-                            fill="none"/><path d="M6 9l6 6l6 -6" />
-                          </svg>
-                        </span>
-                      </div>
-                      <span class="validation-error-message">
-                        {{ validationError.item_id }}
-                      </span>
-                    </div>
-                    
-                    <div class="form-group mb-3">
-                      <label class="form-label">Price <span class="text-danger">*</span></label>
-                      <div>
-                        <div class="input-group mb-2">
-                          <span class="input-group-text rounded-left-custom"> $ </span>
-                          <input
-                              v-model="orderForm.price"
-                              type="number"
-                              class="form-control rounded-right-custom"
-                              placeholder="Enter price"
-                              step="0.01"
-                              :disabled="isViewMode"
-                          >
-                        </div>
-                        <span class="validation-error-message">
-                          {{ validationError.price }}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div class="form-group mb-3">
-                      <label class="form-label">Status</label>
-                      <div class="input-icon">
-                        <Select
-                          ref="statusSelectRef"
-                          :attributes="status_data_modal"
-                          :placeholder="'Select status'"
-                          :disabled="isViewMode"
-                          @selectUpdates="selectStatus"
-                        />
-                        <span class="input-icon-addon">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" 
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" 
-                            class="icon icon-tabler icons-tabler-outline icon-tabler-chevron-down"><path stroke="none" d="M0 0h24v24H0z" 
-                            fill="none"/><path d="M6 9l6 6l6 -6" />
-                          </svg>
-                        </span>
-                      </div>
-                    </div>
-
-                    <!-- Address Section -->
-                    <h6 class="mt-4 mb-3">Delivery Address</h6>
-                    
-                    <div class="form-group mb-3">
-                      <label class="form-label">Address Line 1 <span class="text-danger">*</span></label>
-                      <input
-                          v-model="orderForm.address_line_1"
-                          type="text"
-                          class="form-control rounded-1"
-                          placeholder="Street address"
-                          :disabled="isViewMode"
-                      >
-                      <span class="validation-error-message">
-                        {{ validationError.address_line_1 }}
-                      </span>
-                    </div>
-
-                    <div class="form-group mb-3">
-                      <label class="form-label">Address Line 2</label>
-                      <input
-                          v-model="orderForm.address_line_2"
-                          type="text"
-                          class="form-control rounded-1"
-                          placeholder="Apartment, suite, etc."
-                          :disabled="isViewMode"
-                      >
                     </div>
 
                     <div class="row">
                       <div class="col-md-6">
                         <div class="form-group mb-3">
-                          <label class="form-label">City <span class="text-danger">*</span></label>
+                          <label class="form-label">Contact Number One</label>
                           <input
-                              v-model="orderForm.city"
+                              v-model="orderForm.contact_number_one"
                               type="text"
                               class="form-control rounded-1"
-                              placeholder="City"
-                              :disabled="isViewMode"
+                              readonly
                           >
-                          <span class="validation-error-message">
-                            {{ validationError.city }}
-                          </span>
                         </div>
                       </div>
                       <div class="col-md-6">
                         <div class="form-group mb-3">
-                          <label class="form-label">State/Province</label>
+                          <label class="form-label">Contact Number Two</label>
                           <input
-                              v-model="orderForm.state"
+                              v-model="orderForm.contact_number_two"
+                              type="text"
+                              class="form-control rounded-1"
+                              readonly
+                          >
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="form-group mb-3">
+                      <label class="form-label">Email</label>
+                      <input
+                          v-model="orderForm.email"
+                          type="text"
+                          class="form-control rounded-1"
+                          readonly
+                      >
+                    </div>
+
+                    <h6 class="mt-4 mb-3">Order Items</h6>
+                    
+                    <div v-if="orderForm.order_items && orderForm.order_items.length > 0" class="mb-3">
+                      <div class="table-responsive">
+                        <table class="table table-sm">
+                          <thead>
+                            <tr>
+                              <th>Product</th>
+                              <th>Qty</th>
+                              <th>Sale Amount</th>
+                              <th>Del Fee</th>
+                              <th>Total</th>
+                              <th>Invoiced</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr v-for="(item, index) in orderForm.order_items" :key="index">
+                              <td>{{ item.product?.name || 'N/A' }}</td>
+                              <td>{{ item.qty }}</td>
+                              <td>Rs {{ item.sale_amount }}</td>
+                              <td>Rs {{ item.del_fee }}</td>
+                              <td>Rs {{ ((item.sale_amount * item.qty) + parseFloat(item.del_fee || 0)).toFixed(2) }}</td>
+                              <td>
+                                <span v-if="item.is_invoiced" class="badge bg-success">Yes</span>
+                                <span v-else class="badge bg-secondary">No</span>
+                              </td>
+                            </tr>
+                          </tbody>
+                          <tfoot>
+                            <tr>
+                              <th colspan="4" class="text-end">Grand Total:</th>
+                              <th colspan="2">Rs {{ calculateOrderTotal(orderForm.order_items) }}</th>
+                            </tr>
+                          </tfoot>
+                        </table>
+                      </div>
+                    </div>
+                    <div v-else class="alert alert-info">
+                      No items in this order
+                    </div>
+
+                    <h6 class="mt-4 mb-3">Delivery Information</h6>
+                    
+                    <div class="form-group mb-3">
+                      <label class="form-label">Address</label>
+                      <textarea
+                          v-model="orderForm.address"
+                          class="form-control rounded-1"
+                          rows="2"
+                          readonly
+                      ></textarea>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group mb-3">
+                          <label class="form-label">City</label>
+                          <input
+                              v-model="orderForm.city"
+                              type="text"
+                              class="form-control rounded-1"
+                              readonly
+                          >
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group mb-3">
+                          <label class="form-label">Due Date</label>
+                          <input
+                              v-model="orderForm.due_date"
+                              type="date"
+                              class="form-control rounded-1"
+                              readonly
+                          >
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="form-group mb-3">
+                      <label class="form-label">Lead From</label>
+                      <input
+                          v-model="orderForm.lead_from"
+                          type="text"
+                          class="form-control rounded-1"
+                          readonly
+                      >
+                    </div>
+
+                    <div class="form-group mb-3">
+                      <label class="form-label">Status</label>
+                      <input
+                          v-model="orderForm.status"
+                          type="text"
+                          class="form-control rounded-1"
+                          readonly
+                      >
+                    </div>
+
+                    <div class="form-group mb-3">
+                      <label class="form-label">Notes</label>
+                      <textarea
+                          v-model="orderForm.notes"
+                          class="form-control rounded-1"
+                          rows="2"
+                          readonly
+                      ></textarea>
+                    </div>
+
+                    <div class="form-group mb-3">
+                      <label class="form-label">Other Information</label>
+                      <textarea
+                          v-model="orderForm.other"
+                          class="form-control rounded-1"
+                          rows="2"
+                          readonly
+                      ></textarea>
+                    </div>
+
+                    <!-- Remove all old fields below this (address_line_1, address_line_2, city, state, postal_code, country, phone, email, notes, weight, delivery_date) -->
+                    <div class="d-none">
+                      <!-- Keep this empty div to maintain structure -->
+                    </div>
+
+                    <!-- Dummy fields to keep structure -->
+                    <div class="row d-none">
+                      <div class="col-md-6">
+                        <div class="form-group mb-3">
+                          <label class="form-label">Hidden</label>
+                          <input
+                              v-model="orderForm.city"
                               type="text"
                               class="form-control rounded-1"
                               placeholder="State"
@@ -361,17 +427,8 @@
 
                   </div>
                   <div class="modal-footer-custom">
-                    <button type="button" class="btn btn-light rounded-1" @click="closeOrderModal" :disabled="uploading">
-                      Back
-                    </button>
-                    <button v-if="!isViewMode" type="submit" class="default-btn d-flex justify-content-between" :disabled="uploading">
-                      <span v-if="uploading" class="me-2">
-                        <span class="loader"></span>
-                      </span>
-                      {{ submitButtonText }}
-                    </button>
-                    <button v-else type="button" class="default-btn" @click="isViewMode = false">
-                      Edit Order
+                    <button type="button" class="btn btn-light rounded-1" @click="closeOrderModal">
+                      Close
                     </button>
                   </div>
                 </form>
@@ -530,12 +587,12 @@ const filters = ref({
 
 // Status options
 const status_options = [
-  { label: 'All', value: '' },
-  { label: 'Pending', value: 'pending' },
-  { label: 'Processing', value: 'processing' },
-  { label: 'Shipped', value: 'shipped' },
-  { label: 'Delivered', value: 'delivered' },
-  { label: 'Cancelled', value: 'cancelled' },
+  { id: 0, name: 'All', value: '' },
+  { id: 1, name: 'Pending', value: 'pending' },
+  { id: 2, name: 'Processing', value: 'processing' },
+  { id: 3, name: 'Shipped', value: 'shipped' },
+  { id: 4, name: 'Delivered', value: 'delivered' },
+  { id: 5, name: 'Cancelled', value: 'cancelled' },
 ];
 
 const status_data = ref({
@@ -568,9 +625,10 @@ const ordersTableAttributes = ref({
   labels: [
     { key: "order_number", name: "Order #", sort: true },
     { key: "customer_name", name: "Customer", sort: true },
-    { key: "item", name: "Item", sort: false },
-    { key: "price", name: "Price", sort: true },
-    { key: "address", name: "Location", sort: false },
+    { key: "items", name: "Items", sort: false },
+    { key: "total", name: "Total", sort: false },
+    { key: "contact", name: "Contact", sort: false },
+    { key: "location", name: "Location", sort: false },
     { key: "status", name: "Status", sort: false },
     { key: "actions", name: "Actions", sort: false }
   ],
@@ -578,6 +636,18 @@ const ordersTableAttributes = ref({
   filters: {},
   table_component_values: {},
 });
+
+// Calculate order total from order items
+const calculateOrderTotal = (orderItems) => {
+  if (!orderItems || orderItems.length === 0) return '0.00'
+  
+  const total = orderItems.reduce((sum, item) => {
+    const itemTotal = (parseFloat(item.sale_amount) * parseInt(item.qty)) + parseFloat(item.del_fee || 0)
+    return sum + itemTotal
+  }, 0)
+  
+  return total.toFixed(2)
+}
 
 watch(
   () => filters.value,
@@ -793,21 +863,19 @@ const viewOrderModal = (order) => {
   isViewMode.value = true;
   selectedOrderId.value = order.id;
   orderForm.value = {
-    name: order.name,
-    item_id: order.item_id,
-    price: order.price,
-    status: order.status,
-    address_line_1: order.address_line_1,
-    address_line_2: order.address_line_2 || '',
-    city: order.city,
-    state: order.state || '',
-    postal_code: order.postal_code,
-    country: order.country,
-    phone: order.phone || '',
+    customer_name: order.customer_name,
+    address: order.address || '',
+    city: order.city || '',
+    contact_number_one: order.contact_number_one || '',
+    contact_number_two: order.contact_number_two || '',
     email: order.email || '',
+    other: order.other || '',
+    due_date: order.due_date || '',
+    lead_from: order.lead_from || 'facebook',
+    status: order.status,
     notes: order.notes || '',
+    order_items: order.order_items || []
   };
-  items_data.value.selected = items_data.value.data.find(i => i.value === order.item_id);
   status_data_modal.value.selected = status_data_modal.value.data.find(s => s.value === order.status);
   showOrderModal.value = true;
 }
