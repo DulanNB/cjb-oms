@@ -573,7 +573,6 @@ const updateOrderTableData = async (page = 1, per_page = 15, sort = "") => {
       credentials: 'include',
       headers: {
         'Accept': 'application/json',
-        'X-XSRF-TOKEN': csrfToken.value ? decodeURIComponent(csrfToken.value) : '',
         'X-Requested-With': 'XMLHttpRequest'
       },
       params: {
@@ -637,7 +636,6 @@ const fetchItems = async () => {
       headers: {
         'Accept': 'application/json',
         'X-Requested-With': 'XMLHttpRequest',
-        'X-XSRF-TOKEN': csrfToken
       }
     });
 
@@ -751,7 +749,6 @@ const saveOrder = async () => {
         'Accept': 'application/json',
         'X-Requested-With': 'XMLHttpRequest',
         'Content-Type': 'application/json',
-        'X-XSRF-TOKEN': csrfToken
       },
       body: orderForm.value
     });
@@ -784,7 +781,6 @@ const updateOrder = async () => {
         'Accept': 'application/json',
         'X-Requested-With': 'XMLHttpRequest',
         'Content-Type': 'application/json',
-        'X-XSRF-TOKEN': csrfToken
       },
       body: orderForm.value,
     });
@@ -833,7 +829,6 @@ const handleStatusChange = async () => {
         'Accept': 'application/json',
         'X-Requested-With': 'XMLHttpRequest',
         'Content-Type': 'application/json',
-        'X-XSRF-TOKEN': csrfToken
       },
       body: { status: newStatus.value }
     });
@@ -868,7 +863,6 @@ const handleDelete = async () => {
       headers: {
         'Accept': 'application/json',
         'X-Requested-With': 'XMLHttpRequest',
-        'X-XSRF-TOKEN': csrfToken
       }
     });
 
