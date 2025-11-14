@@ -400,7 +400,7 @@ const signup = async () => {
       password_confirmation: signupForm.fields.password_confirmation
     }
 
-    await $fetch('/api/admin/profile/register', {
+    await $fetch('/api/admin/register', {
       method: 'POST',
       baseURL: config.public.apiUrl,
       credentials: 'include',
@@ -429,7 +429,7 @@ const signup = async () => {
     console.log('New CSRF Token for login:', newCsrfToken) // Debug log
 
     // Auto-login after successful registration
-    const loginResponse = await $fetch('/api/admin/profile/login', {
+    const loginResponse = await $fetch('/api/admin/login', {
       method: 'POST',
       baseURL: config.public.apiUrl,
       credentials: 'include',
