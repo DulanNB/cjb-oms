@@ -235,7 +235,7 @@
 
                     <!-- Del Fee -->
                     <div class="col-12">
-                      <label class="form-label">Del Fee</label>
+                      <label class="form-label">Delivery Fee</label>
                       <input
                         v-model="currentProduct.del_fee"
                         type="number"

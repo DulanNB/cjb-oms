@@ -241,7 +241,7 @@
 
                     <!-- Del Fee -->
                     <div class="col-12">
-                      <label class="form-label">Del Fee</label>
+                      <label class="form-label">Delivery Fee</label>
                       <input
                         v-model="currentProduct.del_fee"
                         type="number"
@@ -270,7 +270,7 @@
                     <div class="col-12">
                       <button 
                         type="button" 
-                        class="btn btn-success w-100"
+                        class="btn btn-warning w-100"
                         @click="addProduct"
                       >
                         Add Product
