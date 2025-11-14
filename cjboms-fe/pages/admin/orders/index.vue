@@ -79,7 +79,7 @@
 
             <Table :attributes="ordersTableAttributes" class="mb-3" @inputUpdates="ordersInputUpdates">
               <template #order_number="{ record }">
-                <span class="fw-semibold">#ORD-{{ record.id }}</span>
+                <span class="fw-semibold">#ODR-{{ record.id }}</span>
               </template>
 
               <template #customer_name="{ record }">

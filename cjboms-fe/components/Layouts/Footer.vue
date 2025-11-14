@@ -5,7 +5,7 @@
         <div class="col-12 col-lg-auto mx-auto">
           <ul class="list-inline list-inline-dots mb-0">
             <li class="list-inline-item fs-14">
-              Copyright © 2025 Harley. All rights reserved.
+              Copyright © 2025 CJBOMS. All rights reserved.
 <!--              <a href="#" class="link-secondary">Priman</a>. All rights-->
 <!--              reserved.-->
             </li>

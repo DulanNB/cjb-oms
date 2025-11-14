@@ -30,7 +30,7 @@
             <form @submit.prevent="handleSubmit" v-if="!pageLoading">
               <div class="row g-3">
                 <!-- Left Column -->
-                <div class="col-md-6">
+                <div class="col-md-6 border-end">
                   <div class="row g-3">
                     <!-- Customer Name -->
                     <div class="col-12">
