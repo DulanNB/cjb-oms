@@ -474,7 +474,7 @@ const signup = async () => {
     }
 
     // Redirect to dashboard
-    await navigateTo('/admin/shipments')
+    await navigateTo('/admin/orders')
 
   } catch (error) {
     console.error('Signup error:', error)
