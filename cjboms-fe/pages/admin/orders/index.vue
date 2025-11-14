@@ -33,16 +33,16 @@
                       <label class="form-label text-muted fs-4 mb-1 fw-semibold">Status</label>
                       <div class="input-icon">
                         <Select
-                          ref="statusSearchRef"
-                          :attributes="status_data"
-                          :placeholder="'Select status'"
-                          @selectUpdates="selectOrderStatus"
+                            ref="statusSearchRef"
+                            :attributes="status_data"
+                            :placeholder="'Select status'"
+                            @selectUpdates="selectOrderStatus"
                         />
                         <span class="input-icon-addon">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" 
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" 
-                            class="icon icon-tabler icons-tabler-outline icon-tabler-chevron-down"><path stroke="none" d="M0 0h24v24H0z" 
-                            fill="none"/><path d="M6 9l6 6l6 -6" />
+                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                               class="icon icon-tabler icons-tabler-outline icon-tabler-chevron-down"><path stroke="none" d="M0 0h24v24H0z"
+                                                                                                            fill="none"/><path d="M6 9l6 6l6 -6" />
                           </svg>
                         </span>
                       </div>
@@ -66,7 +66,7 @@
                 <h3 class="card-title">Orders</h3>
               </div>
               <div>
-                <NuxtLink to="/admin/orders/create" class="btn default-btn-with-only-border"> 
+                <NuxtLink to="/admin/orders/create" class="btn default-btn-with-only-border">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
                     <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
                   </svg>
@@ -94,7 +94,7 @@
                 </div>
                 <span v-else>N/A</span>
               </template>
-              
+
               <template #total="{ record }">
                 <span v-if="record.order_items && record.order_items.length > 0">
                   Rs {{ calculateOrderTotal(record.order_items) }}
@@ -112,7 +112,7 @@
               <template #location="{ record }">
                 <span>{{ record.city || 'N/A' }}</span>
               </template>
-              
+
               <template #status="{ record }">
                 <span :class="getStatusClass(record.status)" @click.prevent="openStatusChangeModal(record)">
                   {{ record.status.charAt(0).toUpperCase() + record.status.slice(1) }}
@@ -145,7 +145,7 @@
 
             </Table>
           </div>
-          
+
           <!-- Add/Edit Order Modal -->
           <transition name="modal-fade">
             <div v-if="showOrderModal" class="modal-overlay" @click.self="closeOrderModal">
@@ -154,7 +154,7 @@
                   <h5 class="modal-title">{{ isEditMode ? isViewMode ? 'View Order' : 'Edit Order' : 'Add Order' }}</h5>
                   <button class="btn-close" @click="closeOrderModal" aria-label="Close">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <line x1="18" y1="6" x2="6" y2="18" />
                       <line x1="6" y1="6" x2="18" y2="18" />
                     </svg>
@@ -162,9 +162,9 @@
                 </div>
                 <form @submit.prevent="handleSubmit">
                   <div class="modal-body-custom">
-                    
+
                     <h6 class="mb-3">Customer Information</h6>
-                      
+
                     <div class="form-group mb-3">
                       <label class="form-label">Customer Name</label>
                       <div>
@@ -213,38 +213,38 @@
                     </div>
 
                     <h6 class="mt-4 mb-3">Order Items</h6>
-                    
+
                     <div v-if="orderForm.order_items && orderForm.order_items.length > 0" class="mb-3">
                       <div class="table-responsive">
                         <table class="table table-sm">
                           <thead>
-                            <tr>
-                              <th>Product</th>
-                              <th>Qty</th>
-                              <th>Sale Amount</th>
-                              <th>Del Fee</th>
-                              <th>Total</th>
-                              <th>Invoiced</th>
-                            </tr>
+                          <tr>
+                            <th>Product</th>
+                            <th>Qty</th>
+                            <th>Sale Amount</th>
+                            <th>Del Fee</th>
+                            <th>Total</th>
+                            <th>Invoiced</th>
+                          </tr>
                           </thead>
                           <tbody>
-                            <tr v-for="(item, index) in orderForm.order_items" :key="index">
-                              <td>{{ item.product?.name || 'N/A' }}</td>
-                              <td>{{ item.qty }}</td>
-                              <td>Rs {{ item.sale_amount }}</td>
-                              <td>Rs {{ item.del_fee }}</td>
-                              <td>Rs {{ ((item.sale_amount * item.qty) + parseFloat(item.del_fee || 0)).toFixed(2) }}</td>
-                              <td>
-                                <span v-if="item.is_invoiced" class="badge badge-sm bg-green-lt">Yes</span>
-                                <span v-else class="badge badge-sm bg-secondary">No</span>
-                              </td>
-                            </tr>
+                          <tr v-for="(item, index) in orderForm.order_items" :key="index">
+                            <td>{{ item.product?.name || 'N/A' }}</td>
+                            <td>{{ item.qty }}</td>
+                            <td>Rs {{ item.sale_amount }}</td>
+                            <td>Rs {{ item.del_fee }}</td>
+                            <td>Rs {{ ((item.sale_amount * item.qty) + parseFloat(item.del_fee || 0)).toFixed(2) }}</td>
+                            <td>
+                              <span v-if="item.is_invoiced" class="badge badge-sm bg-green-lt">Yes</span>
+                              <span v-else class="badge badge-sm bg-secondary">No</span>
+                            </td>
+                          </tr>
                           </tbody>
                           <tfoot>
-                            <tr>
-                              <th colspan="4" class="text-end">Grand Total:</th>
-                              <th colspan="2">Rs {{ calculateOrderTotal(orderForm.order_items) }}</th>
-                            </tr>
+                          <tr>
+                            <th colspan="4" class="text-end">Grand Total:</th>
+                            <th colspan="2">Rs {{ calculateOrderTotal(orderForm.order_items) }}</th>
+                          </tr>
                           </tfoot>
                         </table>
                       </div>
@@ -287,7 +287,7 @@
                   <h5 class="modal-title">Change Order Status</h5>
                   <button class="btn-close-custom" @click="closeStatusModal" aria-label="Close">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <line x1="18" y1="6" x2="6" y2="18" />
                       <line x1="6" y1="6" x2="18" y2="18" />
                     </svg>
@@ -298,16 +298,16 @@
                     <label class="form-label">New Status</label>
                     <div class="input-icon">
                       <Select
-                        ref="statusChangeSelectRef"
-                        :attributes="status_change_data"
-                        :placeholder="'Select new status'"
-                        @selectUpdates="selectNewStatus"
+                          ref="statusChangeSelectRef"
+                          :attributes="status_change_data"
+                          :placeholder="'Select new status'"
+                          @selectUpdates="selectNewStatus"
                       />
                       <span class="input-icon-addon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" 
-                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" 
-                          class="icon icon-tabler icons-tabler-outline icon-tabler-chevron-down"><path stroke="none" d="M0 0h24v24H0z" 
-                          fill="none"/><path d="M6 9l6 6l6 -6" />
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                             class="icon icon-tabler icons-tabler-outline icon-tabler-chevron-down"><path stroke="none" d="M0 0h24v24H0z"
+                                                                                                          fill="none"/><path d="M6 9l6 6l6 -6" />
                         </svg>
                       </span>
                     </div>
@@ -333,7 +333,7 @@
                   <h5 class="modal-title">Delete Order</h5>
                   <button class="btn-close-custom" @click="closeDeleteModal" aria-label="Close">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <line x1="18" y1="6" x2="6" y2="18" />
                       <line x1="6" y1="6" x2="18" y2="18" />
                     </svg>
@@ -483,21 +483,21 @@ const ordersTableAttributes = ref({
 // Calculate order total from order items
 const calculateOrderTotal = (orderItems) => {
   if (!orderItems || orderItems.length === 0) return '0.00'
-  
+
   const total = orderItems.reduce((sum, item) => {
     const itemTotal = (parseFloat(item.sale_amount) * parseInt(item.qty)) + parseFloat(item.del_fee || 0)
     return sum + itemTotal
   }, 0)
-  
+
   return total.toFixed(2)
 }
 
 watch(
-  () => filters.value,
-  (newFilters, oldFilters) => {
-    updateOrderTableData();
-  },
-  { deep: true }
+    () => filters.value,
+    (newFilters, oldFilters) => {
+      updateOrderTableData();
+    },
+    { deep: true }
 )
 
 const searchOrders = (val) => {
@@ -550,7 +550,7 @@ const clearFilters = () => {
     status: '',
   };
   orderSearchRef.value?.clearInput();
-  statusSearchRef.value?.reset(); 
+  statusSearchRef.value?.reset();
 }
 
 const ordersInputUpdates = (values) => {
@@ -564,9 +564,9 @@ const ordersInputUpdates = (values) => {
 
 const updateOrderTableData = async (page = 1, per_page = 15, sort = "") => {
   ordersTableAttributes.value.loading = true;
-  
+
   try {
-    
+
     const response = await $fetch("/api/admin/orders", {
       method: 'GET',
       baseURL: config.public.apiUrl,
@@ -625,9 +625,9 @@ const fetchItems = async () => {
       baseURL: config.public.apiUrl,
       credentials: 'include'
     });
-    
+
     await new Promise(resolve => setTimeout(resolve, 100));
-    
+
     const csrfToken = getCsrfToken();
 
     const response = await $fetch("/api/admin/items/available", {
@@ -792,7 +792,7 @@ const updateOrder = async () => {
     if (response.data && $toast) {
       showOrderModal.value = false;
       $toast.success(response.message || 'Order updated successfully');
-      updateOrderTableData(); 
+      updateOrderTableData();
     }
   } catch (err) {
     if (err?.data?.errors) {
@@ -890,10 +890,10 @@ onMounted(async () => {
       baseURL: config.public.apiUrl,
       credentials: 'include'
     });
-    
+
     // Small delay to ensure cookie is set
     await new Promise(resolve => setTimeout(resolve, 100));
-    
+
     // Then fetch data - if this fails with 401, it means not authenticated
     await fetchItems();
   } catch (error) {
@@ -1144,7 +1144,7 @@ useHead({
 
 .modal-body-custom {
   padding: 24px;
-  max-height: 80vh; 
+  max-height: 80vh;
   overflow-y: auto;
 }
 
@@ -1199,11 +1199,11 @@ useHead({
     flex: 0 0 100%;
     max-width: 100%;
   }
-  
+
   .card-body .row > .col-1 {
     margin-top: 1rem;
   }
-  
+
   .card-body .row > .col-1 .btn {
     width: 100%;
   }
