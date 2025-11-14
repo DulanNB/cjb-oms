@@ -23,6 +23,6 @@ export default defineNuxtRouteMiddleware(async (to) => {
   }
 
   if (loggedIn.value) {
-    return navigateTo('/admin/shipments')
+    return navigateTo('/admin/orders')
   }
 })

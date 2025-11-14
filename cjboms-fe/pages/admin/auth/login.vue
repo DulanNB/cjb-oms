@@ -311,7 +311,7 @@ const login = async () => {
     }
 
     // Redirect to dashboard
-    await navigateTo('/templates/dashboard')
+    await navigateTo('/admin/orders')
 
   } catch (error) {
     console.error('Login error:', error)
