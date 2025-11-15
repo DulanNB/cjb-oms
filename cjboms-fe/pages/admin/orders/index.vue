@@ -571,11 +571,11 @@ const updateOrderTableData = async (page = 1, per_page = 15, sort = "") => {
       method: 'GET',
       baseURL: config.public.apiUrl,
       credentials: 'include',
-      headers: {
-        'Accept': 'application/json',
-        'X-XSRF-TOKEN': csrfToken.value ? decodeURIComponent(csrfToken.value) : '',
-        'X-Requested-With': 'XMLHttpRequest'
-      },
+      // headers: {
+      //   'Accept': 'application/json',
+      //   'X-XSRF-TOKEN': csrfToken.value ? decodeURIComponent(csrfToken.value) : '',
+      //   'X-Requested-With': 'XMLHttpRequest'
+      // },
       params: {
         per_page,
         page,
@@ -634,11 +634,11 @@ const fetchItems = async () => {
       method: 'GET',
       baseURL: config.public.apiUrl,
       credentials: 'include',
-      headers: {
-        'Accept': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest',
-        'X-XSRF-TOKEN': csrfToken
-      }
+      // headers: {
+      //   'Accept': 'application/json',
+      //   'X-Requested-With': 'XMLHttpRequest',
+      //   'X-XSRF-TOKEN': csrfToken
+      // }
     });
 
     items_data.value.data = response.data.map(item => ({
@@ -747,12 +747,12 @@ const saveOrder = async () => {
       method: 'POST',
       baseURL: config.public.apiUrl,
       credentials: 'include',
-      headers: {
-        'Accept': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest',
-        'Content-Type': 'application/json',
-        'X-XSRF-TOKEN': csrfToken
-      },
+      // headers: {
+      //   'Accept': 'application/json',
+      //   'X-Requested-With': 'XMLHttpRequest',
+      //   'Content-Type': 'application/json',
+      //   'X-XSRF-TOKEN': csrfToken
+      // },
       body: orderForm.value
     });
 
@@ -780,12 +780,12 @@ const updateOrder = async () => {
       method: 'PUT',
       baseURL: config.public.apiUrl,
       credentials: 'include',
-      headers: {
-        'Accept': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest',
-        'Content-Type': 'application/json',
-        'X-XSRF-TOKEN': csrfToken
-      },
+      // headers: {
+      //   'Accept': 'application/json',
+      //   'X-Requested-With': 'XMLHttpRequest',
+      //   'Content-Type': 'application/json',
+      //   'X-XSRF-TOKEN': csrfToken
+      // },
       body: orderForm.value,
     });
 
@@ -829,12 +829,12 @@ const handleStatusChange = async () => {
       method: 'PATCH',
       baseURL: config.public.apiUrl,
       credentials: 'include',
-      headers: {
-        'Accept': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest',
-        'Content-Type': 'application/json',
-        'X-XSRF-TOKEN': csrfToken
-      },
+      // headers: {
+      //   'Accept': 'application/json',
+      //   'X-Requested-With': 'XMLHttpRequest',
+      //   'Content-Type': 'application/json',
+      //   'X-XSRF-TOKEN': csrfToken
+      // },
       body: { status: newStatus.value }
     });
 
@@ -865,11 +865,11 @@ const handleDelete = async () => {
       method: 'DELETE',
       baseURL: config.public.apiUrl,
       credentials: 'include',
-      headers: {
-        'Accept': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest',
-        'X-XSRF-TOKEN': csrfToken
-      }
+      // headers: {
+      //   'Accept': 'application/json',
+      //   'X-Requested-With': 'XMLHttpRequest',
+      //   'X-XSRF-TOKEN': csrfToken
+      // }
     });
 
     if ($toast) {
