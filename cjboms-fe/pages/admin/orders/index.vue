@@ -628,7 +628,7 @@ const fetchItems = async () => {
 
     await new Promise(resolve => setTimeout(resolve, 100));
 
-    const csrfToken = getCsrfToken();
+    //const csrfToken = getCsrfToken();
 
     const response = await $fetch("/api/admin/items/available", {
       method: 'GET',
@@ -742,7 +742,7 @@ const handleSubmit = () => {
 const saveOrder = async () => {
   uploading.value = true;
   try {
-    const csrfToken = getCsrfToken();
+    //const csrfToken = getCsrfToken();
     const response = await $fetch('/api/admin/orders', {
       method: 'POST',
       baseURL: config.public.apiUrl,
@@ -775,7 +775,7 @@ const saveOrder = async () => {
 const updateOrder = async () => {
   uploading.value = true;
   try {
-    const csrfToken = getCsrfToken();
+   // const csrfToken = getCsrfToken();
     const response = await $fetch(`/api/admin/orders/${selectedOrderId.value}`, {
       method: 'PUT',
       baseURL: config.public.apiUrl,
@@ -824,7 +824,7 @@ const handleStatusChange = async () => {
     return;
   }
   try {
-    const csrfToken = getCsrfToken();
+    //const csrfToken = getCsrfToken();
     const response = await $fetch(`/api/admin/orders/${selectedOrderId.value}/status`, {
       method: 'PATCH',
       baseURL: config.public.apiUrl,
@@ -860,7 +860,7 @@ const closeDeleteModal = () => {
 
 const handleDelete = async () => {
   try {
-    const csrfToken = getCsrfToken();
+    //const csrfToken = getCsrfToken();
     const response = await $fetch(`/api/admin/orders/${selectedOrderId.value}`, {
       method: 'DELETE',
       baseURL: config.public.apiUrl,
