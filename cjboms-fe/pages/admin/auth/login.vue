@@ -237,35 +237,35 @@ const login = async () => {
     })
 
     // Small delay to ensure cookie is set
-    //await new Promise(resolve => setTimeout(resolve, 200))
+    await new Promise(resolve => setTimeout(resolve, 200))
 
     // Get CSRF token from cookie - try multiple ways
-    // let csrfToken = ''
-    //
-    // if (process.client) {
-    //   // Method 1: Try to get from document.cookie
-    //   const cookies = document.cookie.split(';')
-    //   const xsrfCookie = cookies.find(c => c.trim().startsWith('XSRF-TOKEN='))
-    //   if (xsrfCookie) {
-    //     csrfToken = decodeURIComponent(xsrfCookie.split('=')[1])
-    //     console.log('CSRF Token from document.cookie:', csrfToken)
-    //   }
-    //
-    //   // Method 2: Try useCookie as fallback
-    //   if (!csrfToken) {
-    //     const csrfCookie = useCookie('XSRF-TOKEN')
-    //     if (csrfCookie.value) {
-    //       csrfToken = decodeURIComponent(csrfCookie.value)
-    //       console.log('CSRF Token from useCookie:', csrfToken)
-    //     }
-    //   }
-    //
-    //   console.log('All cookies:', document.cookie)
-    // }
-    //
-    // if (!csrfToken) {
-    //   throw new Error('CSRF token not found. Please refresh the page and try again.')
-    // }
+    let csrfToken = ''
+
+    if (process.client) {
+      // Method 1: Try to get from document.cookie
+      const cookies = document.cookie.split(';')
+      const xsrfCookie = cookies.find(c => c.trim().startsWith('XSRF-TOKEN='))
+      if (xsrfCookie) {
+        csrfToken = decodeURIComponent(xsrfCookie.split('=')[1])
+        console.log('CSRF Token from document.cookie:', csrfToken)
+      }
+
+      // Method 2: Try useCookie as fallback
+      if (!csrfToken) {
+        const csrfCookie = useCookie('XSRF-TOKEN')
+        if (csrfCookie.value) {
+          csrfToken = decodeURIComponent(csrfCookie.value)
+          console.log('CSRF Token from useCookie:', csrfToken)
+        }
+      }
+
+      console.log('All cookies:', document.cookie)
+    }
+
+    if (!csrfToken) {
+      throw new Error('CSRF token not found. Please refresh the page and try again.')
+    }
 
     // Attempt login
     const response = await $fetch('/api/admin/login', {
@@ -273,22 +273,22 @@ const login = async () => {
       baseURL: config.public.apiUrl,
       credentials: 'include',
       body: loginForm.fields,
-      // headers: {
-      //   'Accept': 'application/json',
-      //   'Content-Type': 'application/json',
-      //   'X-XSRF-TOKEN': csrfToken,
-      //   'X-Requested-With': 'XMLHttpRequest'
-      // }
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'X-XSRF-TOKEN': csrfToken,
+        'X-Requested-With': 'XMLHttpRequest'
+      }
     })
 
     // Get user data after successful login
     const user = await $fetch('/api/admin/profile', {
       baseURL: config.public.apiUrl,
       credentials: 'include',
-      // headers: {
-      //   'Accept': 'application/json',
-      //   'X-XSRF-TOKEN': csrfToken
-      // }
+      headers: {
+        'Accept': 'application/json',
+        'X-XSRF-TOKEN': csrfToken
+      }
     })
 
     // Store user data using auth composable

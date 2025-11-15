@@ -369,7 +369,7 @@ definePageMeta({
 })
 
 const config = useRuntimeConfig()
-//const csrfToken = useCookie('XSRF-TOKEN')
+const csrfToken = useCookie('XSRF-TOKEN')
 
 const {$toast} = useNuxtApp()
 
@@ -571,11 +571,11 @@ const updateOrderTableData = async (page = 1, per_page = 15, sort = "") => {
       method: 'GET',
       baseURL: config.public.apiUrl,
       credentials: 'include',
-      // headers: {
-      //   'Accept': 'application/json',
-      //   'X-XSRF-TOKEN': csrfToken.value ? decodeURIComponent(csrfToken.value) : '',
-      //   'X-Requested-With': 'XMLHttpRequest'
-      // },
+      headers: {
+        'Accept': 'application/json',
+        'X-XSRF-TOKEN': csrfToken.value ? decodeURIComponent(csrfToken.value) : '',
+        'X-Requested-With': 'XMLHttpRequest'
+      },
       params: {
         per_page,
         page,
@@ -628,17 +628,17 @@ const fetchItems = async () => {
 
     await new Promise(resolve => setTimeout(resolve, 100));
 
-    //const csrfToken = getCsrfToken();
+    const csrfToken = getCsrfToken();
 
     const response = await $fetch("/api/admin/items/available", {
       method: 'GET',
       baseURL: config.public.apiUrl,
       credentials: 'include',
-      // headers: {
-      //   'Accept': 'application/json',
-      //   'X-Requested-With': 'XMLHttpRequest',
-      //   'X-XSRF-TOKEN': csrfToken
-      // }
+      headers: {
+        'Accept': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest',
+        'X-XSRF-TOKEN': csrfToken
+      }
     });
 
     items_data.value.data = response.data.map(item => ({
@@ -742,17 +742,17 @@ const handleSubmit = () => {
 const saveOrder = async () => {
   uploading.value = true;
   try {
-    //const csrfToken = getCsrfToken();
+    const csrfToken = getCsrfToken();
     const response = await $fetch('/api/admin/orders', {
       method: 'POST',
       baseURL: config.public.apiUrl,
       credentials: 'include',
-      // headers: {
-      //   'Accept': 'application/json',
-      //   'X-Requested-With': 'XMLHttpRequest',
-      //   'Content-Type': 'application/json',
-      //   'X-XSRF-TOKEN': csrfToken
-      // },
+      headers: {
+        'Accept': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest',
+        'Content-Type': 'application/json',
+        'X-XSRF-TOKEN': csrfToken
+      },
       body: orderForm.value
     });
 
@@ -775,17 +775,17 @@ const saveOrder = async () => {
 const updateOrder = async () => {
   uploading.value = true;
   try {
-   // const csrfToken = getCsrfToken();
+    const csrfToken = getCsrfToken();
     const response = await $fetch(`/api/admin/orders/${selectedOrderId.value}`, {
       method: 'PUT',
       baseURL: config.public.apiUrl,
       credentials: 'include',
-      // headers: {
-      //   'Accept': 'application/json',
-      //   'X-Requested-With': 'XMLHttpRequest',
-      //   'Content-Type': 'application/json',
-      //   'X-XSRF-TOKEN': csrfToken
-      // },
+      headers: {
+        'Accept': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest',
+        'Content-Type': 'application/json',
+        'X-XSRF-TOKEN': csrfToken
+      },
       body: orderForm.value,
     });
 
@@ -824,17 +824,17 @@ const handleStatusChange = async () => {
     return;
   }
   try {
-    //const csrfToken = getCsrfToken();
+    const csrfToken = getCsrfToken();
     const response = await $fetch(`/api/admin/orders/${selectedOrderId.value}/status`, {
       method: 'PATCH',
       baseURL: config.public.apiUrl,
       credentials: 'include',
-      // headers: {
-      //   'Accept': 'application/json',
-      //   'X-Requested-With': 'XMLHttpRequest',
-      //   'Content-Type': 'application/json',
-      //   'X-XSRF-TOKEN': csrfToken
-      // },
+      headers: {
+        'Accept': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest',
+        'Content-Type': 'application/json',
+        'X-XSRF-TOKEN': csrfToken
+      },
       body: { status: newStatus.value }
     });
 
@@ -860,16 +860,16 @@ const closeDeleteModal = () => {
 
 const handleDelete = async () => {
   try {
-    //const csrfToken = getCsrfToken();
+    const csrfToken = getCsrfToken();
     const response = await $fetch(`/api/admin/orders/${selectedOrderId.value}`, {
       method: 'DELETE',
       baseURL: config.public.apiUrl,
       credentials: 'include',
-      // headers: {
-      //   'Accept': 'application/json',
-      //   'X-Requested-With': 'XMLHttpRequest',
-      //   'X-XSRF-TOKEN': csrfToken
-      // }
+      headers: {
+        'Accept': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest',
+        'X-XSRF-TOKEN': csrfToken
+      }
     });
 
     if ($toast) {
