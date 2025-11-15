@@ -369,7 +369,7 @@ definePageMeta({
 })
 
 const config = useRuntimeConfig()
-const csrfToken = useCookie('XSRF-TOKEN')
+//const csrfToken = useCookie('XSRF-TOKEN')
 
 const {$toast} = useNuxtApp()
 
