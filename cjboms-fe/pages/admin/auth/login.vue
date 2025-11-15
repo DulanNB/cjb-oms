@@ -273,22 +273,22 @@ const login = async () => {
       baseURL: config.public.apiUrl,
       credentials: 'include',
       body: loginForm.fields,
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'X-XSRF-TOKEN': csrfToken,
-        'X-Requested-With': 'XMLHttpRequest'
-      }
+      // headers: {
+      //   'Accept': 'application/json',
+      //   'Content-Type': 'application/json',
+      //   'X-XSRF-TOKEN': csrfToken,
+      //   'X-Requested-With': 'XMLHttpRequest'
+      // }
     })
 
     // Get user data after successful login
     const user = await $fetch('/api/admin/profile', {
       baseURL: config.public.apiUrl,
       credentials: 'include',
-      headers: {
-        'Accept': 'application/json',
-        'X-XSRF-TOKEN': csrfToken
-      }
+      // headers: {
+      //   'Accept': 'application/json',
+      //   'X-XSRF-TOKEN': csrfToken
+      // }
     })
 
     // Store user data using auth composable

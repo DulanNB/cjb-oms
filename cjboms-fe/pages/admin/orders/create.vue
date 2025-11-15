@@ -500,11 +500,11 @@ const fetchItems = async () => {
       method: 'GET',
       baseURL: config.public.apiUrl,
       credentials: 'include',
-      headers: {
-        'Accept': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest',
-        'X-XSRF-TOKEN': csrfToken
-      }
+      // headers: {
+      //   'Accept': 'application/json',
+      //   'X-Requested-With': 'XMLHttpRequest',
+      //   'X-XSRF-TOKEN': csrfToken
+      // }
     })
 
     items_data.value.data = response.data.map(item => ({
@@ -546,12 +546,12 @@ const handleSubmit = async () => {
       method: 'POST',
       baseURL: config.public.apiUrl,
       credentials: 'include',
-      headers: {
-        'Accept': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest',
-        'Content-Type': 'application/json',
-        'X-XSRF-TOKEN': csrfToken
-      },
+      // headers: {
+      //   'Accept': 'application/json',
+      //   'X-Requested-With': 'XMLHttpRequest',
+      //   'Content-Type': 'application/json',
+      //   'X-XSRF-TOKEN': csrfToken
+      // },
       body: {
         customer_name: orderForm.value.customer_name,
         address: orderForm.value.address,
