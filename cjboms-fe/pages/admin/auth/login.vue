@@ -218,53 +218,118 @@ const validateForm = () => {
 }
 
 const login = async () => {
+  // Clear previous errors
   loginForm.errors = {}
   loginForm.message = ''
 
-  if (!validateForm()) return
+  // Validate form
+  if (!validateForm()) {
+    return
+  }
 
   try {
     loginForm.loading = true
 
-    await $fetch('/sanctum/csrf-cookie', {
+    // Get CSRF token first using Sanctum's endpoint
+    const csrfResponse = await $fetch('/sanctum/csrf-cookie', {
       baseURL: config.public.apiUrl,
       credentials: 'include'
     })
 
-    const response = await $fetch('/api/admin/profile/login', {
+    // Small delay to ensure cookie is set
+    //await new Promise(resolve => setTimeout(resolve, 200))
+
+    // Get CSRF token from cookie - try multiple ways
+    // let csrfToken = ''
+    //
+    // if (process.client) {
+    //   // Method 1: Try to get from document.cookie
+    //   const cookies = document.cookie.split(';')
+    //   const xsrfCookie = cookies.find(c => c.trim().startsWith('XSRF-TOKEN='))
+    //   if (xsrfCookie) {
+    //     csrfToken = decodeURIComponent(xsrfCookie.split('=')[1])
+    //     console.log('CSRF Token from document.cookie:', csrfToken)
+    //   }
+    //
+    //   // Method 2: Try useCookie as fallback
+    //   if (!csrfToken) {
+    //     const csrfCookie = useCookie('XSRF-TOKEN')
+    //     if (csrfCookie.value) {
+    //       csrfToken = decodeURIComponent(csrfCookie.value)
+    //       console.log('CSRF Token from useCookie:', csrfToken)
+    //     }
+    //   }
+    //
+    //   console.log('All cookies:', document.cookie)
+    // }
+    //
+    // if (!csrfToken) {
+    //   throw new Error('CSRF token not found. Please refresh the page and try again.')
+    // }
+
+    // Attempt login
+    const response = await $fetch('/api/admin/login', {
       method: 'POST',
       baseURL: config.public.apiUrl,
       credentials: 'include',
-      body: loginForm.fields
+      body: loginForm.fields,
+      // headers: {
+      //   'Accept': 'application/json',
+      //   'Content-Type': 'application/json',
+      //   'X-XSRF-TOKEN': csrfToken,
+      //   'X-Requested-With': 'XMLHttpRequest'
+      // }
     })
 
+    // Get user data after successful login
     const user = await $fetch('/api/admin/profile', {
       baseURL: config.public.apiUrl,
-      credentials: 'include'
+      credentials: 'include',
+      // headers: {
+      //   'Accept': 'application/json',
+      //   'X-XSRF-TOKEN': csrfToken
+      // }
     })
 
-    const { setUser, setLoggedIn } = useAuth()
-    setUser(user.data)
-    setLoggedIn(true)
+    // Store user data using auth composable
+    const {setUser, setLoggedIn} = useAuth()
 
-    $toast.success('Login successful!')
+    // Ensure the state is properly set
+    if (user && user.data) {
+      setUser(user.data)
+      setLoggedIn(true)
 
+
+    } else {
+      throw new Error('Invalid user data received')
+    }
+
+    // Show success message
+    const {$toast} = useNuxtApp()
+    if ($toast) {
+      $toast.success('Login successful!')
+    }
+
+    // Redirect to dashboard
     await navigateTo('/admin/orders')
 
   } catch (error) {
     console.error('Login error:', error)
 
-    if (error.data?.errors) {
+    if (error.data && error.data.errors) {
       loginForm.errors = error.data.errors
       loginForm.message = error.data.message || 'Login failed'
+    } else if (error.data && error.data.message) {
+      loginForm.message = error.data.message
+    } else if (error.statusCode === 419) {
+      loginForm.message = 'Session expired. Please refresh the page and try again.'
     } else {
-      loginForm.message = error.data?.message || 'Login failed'
+      loginForm.message = 'Network error. Please try again.'
     }
   } finally {
     loginForm.loading = false
   }
 }
-
 
 // Head management
 useHead({
