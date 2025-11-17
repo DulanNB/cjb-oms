@@ -9,15 +9,34 @@
               <div class="row">
                 <div class="col-11">
                   <div class="row">
-                    <!-- Order Number / Name Filter -->
+                    <!-- Order ID Filter -->
                     <div class="col-md-3">
-                      <label class="form-label text-muted fs-4 mb-1 fw-semibold">Search</label>
+                      <label class="form-label text-muted fs-4 mb-1 fw-semibold">Order ID</label>
                       <div class="input-icon">
                         <FilterSearch
-                            ref="orderSearchRef"
-                            v-model="searchTerm"
-                            :placeholder="'Order number or name'"
-                            @queryUpdates="searchOrders"
+                            ref="orderIdSearchRef"
+                            v-model="orderIdTerm"
+                            :placeholder="'Order ID'"
+                            @queryUpdates="searchOrderId"
+                        />
+                        <span class="input-icon-addon">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1">
+                            <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
+                            <path d="M21 21l-6 -6"></path>
+                          </svg>
+                        </span>
+                      </div>
+                    </div>
+
+                    <!-- Customer Name Filter -->
+                    <div class="col-md-3">
+                      <label class="form-label text-muted fs-4 mb-1 fw-semibold">Customer Name</label>
+                      <div class="input-icon">
+                        <FilterSearch
+                            ref="customerNameSearchRef"
+                            v-model="customerNameTerm"
+                            :placeholder="'Customer Name'"
+                            @queryUpdates="searchCustomerName"
                         />
                         <span class="input-icon-addon">
                           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1">
@@ -413,18 +432,21 @@ const orderForm = ref({
 })
 
 // Filter refs
-const orderSearchRef = ref(null);
+const orderIdSearchRef = ref(null);
+const customerNameSearchRef = ref(null);
 const statusSearchRef = ref(null);
 const itemSelectRef = ref(null);
 const statusSelectRef = ref(null);
 const statusChangeSelectRef = ref(null);
-const searchTerm = ref({});
+const orderIdTerm = ref({});
+const customerNameTerm = ref({});
 const validationError = ref({});
 const uploading = ref(false);
 
 // Filters
 const filters = ref({
-  search: '',
+  orderId: '',
+  customerName: '',
   status: '',
 });
 
@@ -500,8 +522,12 @@ watch(
     { deep: true }
 )
 
-const searchOrders = (val) => {
-  filters.value.search = val;
+const searchOrderId = (val) => {
+  filters.value.orderId = val;
+}
+
+const searchCustomerName = (val) => {
+  filters.value.customerName = val;
 }
 
 const selectOrderStatus = (selectedStatus) => {
@@ -544,12 +570,15 @@ const getStatusClass = (status) => {
 }
 
 const clearFilters = () => {
-  searchTerm.value = {};
+  orderIdTerm.value = {};
+  customerNameTerm.value = {};
   filters.value = {
-    search: '',
+    orderId: '',
+    customerName: '',
     status: '',
   };
-  orderSearchRef.value?.clearInput();
+  orderIdSearchRef.value?.clearInput();
+  customerNameSearchRef.value?.clearInput();
   statusSearchRef.value?.reset();
 }
 
@@ -566,6 +595,31 @@ const updateOrderTableData = async (page = 1, per_page = 15, sort = "") => {
   ordersTableAttributes.value.loading = true;
 
   try {
+    // Build query parameters for QueryBuilder
+    const params = {
+      per_page,
+      page,
+    };
+
+    // Add order ID filter if present
+    if (filters.value.orderId) {
+      params['filter[id]'] = filters.value.orderId;
+    }
+
+    // Add customer name filter if present
+    if (filters.value.customerName) {
+      params['filter[customer_name]'] = filters.value.customerName;
+    }
+
+    // Add status filter if present
+    if (filters.value.status) {
+      params['filter[status]'] = filters.value.status;
+    }
+
+    // Add sort parameter if present
+    if (sort) {
+      params['sort'] = sort;
+    }
 
     const response = await $fetch("/api/admin/orders", {
       method: 'GET',
@@ -576,25 +630,8 @@ const updateOrderTableData = async (page = 1, per_page = 15, sort = "") => {
         'X-XSRF-TOKEN': csrfToken.value ? decodeURIComponent(csrfToken.value) : '',
         'X-Requested-With': 'XMLHttpRequest'
       },
-      params: {
-        per_page,
-        page,
-        search: filters.value.search,
-        status: filters.value.status,
-      }
+      params
     });
-
-    if (sort) {
-      const isDesc = sort.startsWith('-');
-      const sortKey = isDesc ? sort.substring(1) : sort;
-      response.data.data.sort((a, b) => {
-        let aVal = a[sortKey] || '';
-        let bVal = b[sortKey] || '';
-        if (aVal < bVal) return isDesc ? 1 : -1;
-        if (aVal > bVal) return isDesc ? -1 : 1;
-        return 0;
-      })
-    }
 
     ordersTableAttributes.value.api_response = {
       ...response.data.meta,
