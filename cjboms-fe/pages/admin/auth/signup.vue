@@ -23,6 +23,25 @@
                   {{ signupForm.message }}
                 </div>
 
+                <!-- Organization Name -->
+                <div class="form-input mb-3">
+                  <label class="form-label required">Organization Name</label>
+                  <input
+                      id="signup_form_organization_name"
+                      v-model="signupForm.fields.organization_name"
+                      :class="[signupForm.errors.organization_name ? 'is-invalid' : '']"
+                      class="form-control"
+                      placeholder="Enter organization name"
+                      type="text"
+                  />
+                  <div
+                      v-if="signupForm.errors.organization_name"
+                      class="invalid-feedback"
+                  >
+                    {{ signupForm.errors.organization_name[0] }}
+                  </div>
+                </div>
+
                 <!-- First Name -->
                 <div class="form-input mb-3">
                   <label class="form-label required">First Name</label>
@@ -291,6 +310,7 @@ const config = useRuntimeConfig()
 // Reactive data
 const signupForm = reactive({
   fields: {
+    organization_name: '',
     first_name: '',
     last_name: '',
     email: '',
@@ -319,6 +339,13 @@ const passwordVisibilityToggle = (type) => {
 
 const validateForm = () => {
   const errors = {}
+
+  // Validate organization name
+  if (!signupForm.fields.organization_name) {
+    errors.organization_name = ['Organization name is required']
+  } else if (signupForm.fields.organization_name.length > 255) {
+    errors.organization_name = ['Organization name cannot exceed 255 characters']
+  }
 
   // Validate first name and last name (for frontend display)
   if (!signupForm.fields.first_name) {
@@ -393,6 +420,7 @@ const signup = async () => {
 
     // Register user - prepare data for Laravel API
     const registrationData = {
+      organization_name: signupForm.fields.organization_name,
       first_name: signupForm.fields.first_name,
       last_name: signupForm.fields.last_name,
       email: signupForm.fields.email,

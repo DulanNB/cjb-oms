@@ -26,18 +26,36 @@ export default defineNuxtPlugin((nuxtApp) => {
     return response;
   }, error => {
     const code = parseInt(error.response && error.response.status);
-    const nuxtAppInstance = useNuxtApp();
 
     if (code === 401) {
-      // If using @sidebase/nuxt-auth or similar, adapt logout accordingly
-      if (nuxtAppInstance.$auth && typeof nuxtAppInstance.$auth.logout === 'function') {
-        nuxtAppInstance.$auth.logout();
+      console.log('401 Unauthorized in axios - redirecting to login');
+      
+      // Clear auth state
+      if (process.client) {
+        localStorage.removeItem('auth.user');
+        localStorage.removeItem('auth.loggedIn');
+        localStorage.removeItem('organization');
       }
-      //localStorage.clear();
+      
+      // Redirect to login
       navigateTo('/admin/auth/login');
     }
 
+    if (code === 419) {
+      console.log('419 CSRF token mismatch in axios');
+      
+      // Clear auth state
+      if (process.client) {
+        localStorage.removeItem('auth.user');
+        localStorage.removeItem('auth.loggedIn');
+      }
+      
+      // Redirect to login with message
+      navigateTo('/admin/auth/login?session_expired=1');
+    }
+
     if (code === 423) {
+      const nuxtAppInstance = useNuxtApp();
       navigateTo({ name: 'admin-confirm-password', query: { return: nuxtAppInstance.$router?.currentRoute?.name } });
     }
 
